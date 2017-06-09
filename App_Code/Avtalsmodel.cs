@@ -8,11 +8,16 @@ using System.Web;
 /// </summary>
 public class Avtalsmodel
 {
-    public int id { get; set; }
-    public long diarienummer { get; set; }
-    public DateTime startdate { get; set; }
-    public DateTime enddate { get; set; }
+    public long id { get; set; }
+    public long? diarienummer { get; set; }
+    public DateTime? startdate { get; set; }
+    public DateTime? enddate { get; set; }
     public string orgnummer { get; set; }
     public string enligtAvtal { get; set; }
-
+    public string interntAlias { get; set; }
+    public string motpartstyp { get; set; }
+    public string status { get; set; }
+    public int sbkid { get; set; }
+    public string scan_url { get; set; }
+    public string kommentar { get; set; }
 }

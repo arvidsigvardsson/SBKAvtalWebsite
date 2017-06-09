@@ -6,6 +6,7 @@
     <h4>Alla avtal</h4>
     <asp:Table ID="avtalstabell" runat="server" CssClass="table">
         <asp:TableRow>
+            <asp:TableHeaderCell></asp:TableHeaderCell>
             <asp:TableHeaderCell>Diarienummer</asp:TableHeaderCell>
             <asp:TableHeaderCell>Börjar gälla</asp:TableHeaderCell>
             <asp:TableHeaderCell>Upphör gälla</asp:TableHeaderCell>

@@ -2,14 +2,18 @@
     CodeFile="avtal_detail.aspx.cs" Inherits="avtal_detail" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+    
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="Server">
     <asp:Label ID="debugl" runat="server" Text="debug"></asp:Label>
-    <form class="form-horizontal">
+
+    <asp:Label ID="debugl2" runat="server" Text="debug"></asp:Label>
+
+    <form class="form-horizontal" method="post" action="avtal_detail.aspx">
         <div class="form-group">
             <asp:Label ID="Label1" runat="server" Text="Diarienummer" class="control-label col-sm-2"></asp:Label>
                 <div class="col-sm-10">
-            <asp:TextBox ID="diarietb" runat="server" ReadOnly="True" class="form-control"></asp:TextBox>
+            <asp:TextBox ID="diarietb" runat="server" class="form-control"></asp:TextBox>
             </div>
         </div>
     
@@ -56,5 +60,9 @@
             </div>
         </div>
 
+        <asp:Button ID="submitbtn" runat="server" Text="Skicka" onclick="Button1_Click" class="btn btn-primary"/>
+        
+        <%--<input type="submit" value="Skicka" runat="server" name="submitbtn"/>--%>
+        
     </form>
 </asp:Content>

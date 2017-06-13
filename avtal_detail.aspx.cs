@@ -12,6 +12,14 @@ public partial class avtal_detail : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+
+        if (Page.IsPostBack)
+        {
+            // kolla om det är ett nytt avtal eller uppdaterat avtal, hur ska detta göras?
+
+            PostbackNewAvtal();           
+        }
+
         var test = new Avtalsmodel();
         //var id = Request.Params["id"];
         //idlabel.Text = id;
@@ -31,7 +39,7 @@ public partial class avtal_detail : System.Web.UI.Page
             {
                 conn.Open();
 
-                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar from sbkavtal.avtal where id = @p1;";
+                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar from sbk_avtal.avtal where id = @p1;";
                 using (var cmd = new NpgsqlCommand(sqlquery, conn))
                 {
                     // cmd.Connection = conn;
@@ -47,5 +55,18 @@ public partial class avtal_detail : System.Web.UI.Page
                 }
             }
         }
+    }
+
+    private void PostbackNewAvtal()
+    {
+        debugl.Text = diarietb.Text;
+    }
+
+
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        submitbtn.Text = "Skickat!";
+        submitbtn.CssClass = "btn btn-success";
+        // debugl.Text = diarietb.Text;
     }
 }

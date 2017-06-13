@@ -45,12 +45,12 @@ create table sbk_avtal.fakturaadress(
 create table sbk_avtal.avtal(
 	id			serial primary key,
 	diarienummer		bigint,
-	status			avtalsstatus,
+	status			sbk_avtal.avtalsstatus,
 	startdate		date,
 	enddate			date,
 	orgnummer		varchar(20),
 
-	motpartstyp		motpartstyp,
+	motpartstyp		sbk_avtal.motpartstyp,
 	SBKavtalsid		int,
 	scan_url		varchar(512),
 	enligt_avtal		text,
@@ -107,12 +107,12 @@ create table sbk_avtal.log_updates(
 	created_at		timestamp default now(),
 	
 	diarienummer		bigint,
-	status			avtalsstatus,
+	status			sbk_avtal.avtalsstatus,
 	startdate		date,
 	enddate			date,
 	orgnummer		varchar(20),
 
-	motpartstyp		motpartstyp,
+	motpartstyp		sbk_avtal.motpartstyp,
 	SBKavtalsid		int,
 	scan_url		varchar(512),
 	enligt_avtal		text,

@@ -21,7 +21,7 @@ public partial class avtal : System.Web.UI.Page
             using (var cmd = new NpgsqlCommand())
             {
                 cmd.Connection = conn;
-                cmd.CommandText = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar from sbkavtal.avtal;";
+                cmd.CommandText = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar from sbk_avtal.avtal;";
                 //cmd.CommandText = "select @fields from sbkavtal.avtal";
                 //cmd.Parameters.AddWithValue("fields", Avtalsfactory.Fields);
                 

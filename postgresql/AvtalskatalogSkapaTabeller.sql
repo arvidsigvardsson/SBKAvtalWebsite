@@ -1,23 +1,27 @@
-﻿drop schema if exists sbkavtal cascade;
+﻿-- drop schema if exists sbk_avtal cascade;
 
-create schema sbkavtal;
+-- create schema sbk_avtal;
 
 
-drop table if exists sbkavtal.avtal;
-drop table if exists sbkavtal.person;
-drop table if exists sbkavtal.intaktskontering;
-drop table if exists sbkavtal.avtalsinnehåll;
+drop table if exists sbk_avtal.avtal cascade;
+drop table if exists sbk_avtal.person cascade;
+-- drop table if exists sbk_avtal.intaktskontering cascade;
+drop table if exists sbk_avtal.avtalsinnehall cascade;
+drop table if exists sbk_avtal.fakturaadress cascade;
+drop table if exists sbk_avtal.map_avtal_innehall cascade;
+drop table if exists sbk_avtal.log_updates cascade;
 
-drop type if exists sbkavtal.avtalsstatus;
-create type sbkavtal.avtalsstatus as enum('Aktivt', 'Inaktivt');
 
-drop type if exists sbkavtal.motpartstyp;
-create type sbkavtal.motpartstyp as enum('Extern', 'Förvaltning', 'Kommunalt bolag', 'Uppgift saknas');
+drop type if exists sbk_avtal.avtalsstatus;
+create type sbk_avtal.avtalsstatus as enum('Aktivt', 'Inaktivt');
 
-drop type if exists sbkavtal.avtalsinnehallstyp;
-create type sbkavtal.avtalsinnehallstyp as enum('avtalsinnehåll 1', 'avtalsinnehåll 2', 'avtalsinnehåll 3');
+drop type if exists sbk_avtal.motpartstyp;
+create type sbk_avtal.motpartstyp as enum('Extern', 'Förvaltning', 'Kommunalt bolag', 'Uppgift saknas');
 
-create table sbkavtal.person(
+-- drop type if exists sbk_avtal.avtalsinnehallstyp;
+-- create type sbk_avtal.avtalsinnehallstyp as enum('avtalsinnehåll 1', 'avtalsinnehåll 2', 'avtalsinnehåll 3');
+
+create table sbk_avtal.person(
 	id			serial primary key,
 	first_name		varchar(50),
 	last_name		varchar(50),
@@ -28,7 +32,7 @@ create table sbkavtal.person(
 	epost			varchar(50)
 );
 
-create table sbkavtal.fakturaadress(
+create table sbk_avtal.fakturaadress(
 	id			serial primary key,
 	first_name		varchar,
 	last_name		varchar,
@@ -38,7 +42,7 @@ create table sbkavtal.fakturaadress(
 	referens		varchar
 );
 
-create table sbkavtal.avtal(
+create table sbk_avtal.avtal(
 	id			serial primary key,
 	diarienummer		bigint,
 	status			avtalsstatus,
@@ -53,20 +57,20 @@ create table sbkavtal.avtal(
 	internt_alias		text,
 	kommentar		text,
 
-	avtalstecknare		integer references sbkavtal.person,
-	avtalskontakt		integer references sbkavtal.person,
+	avtalstecknare		integer references sbk_avtal.person,
+	avtalskontakt		integer references sbk_avtal.person,
 
-	upphandlat_av		integer references sbkavtal.person,
-	ansvarig_SBK		integer references sbkavtal.person,
+	upphandlat_av		integer references sbk_avtal.person,
+	ansvarig_SBK		integer references sbk_avtal.person,
 	ansvarig_avd		varchar(50),
 	ansvarig_enhet		varchar(50),
 
 -- 	avtalsinnehall		text,
 	avtalsvarde		bigint,
 
-	datakontakt		integer references sbkavtal.person,
+	datakontakt		integer references sbk_avtal.person,
 
--- 	intaktskontering	integer references sbkavtal.intaktskontering,
+-- 	intaktskontering	integer references sbk_avtal.intaktskontering,
 	konto			varchar,
 	kstl			varchar,
 	vht			varchar,
@@ -75,35 +79,72 @@ create table sbkavtal.avtal(
 	objekt			varchar,
 	projekt			varchar,
 	
-	fakt_adress		integer references sbkavtal.fakturaadress,
+	fakt_adress		integer references sbk_avtal.fakturaadress,
 
 	vitalt_avtal		boolean,
 	gallringsår		date
 	
 );
 
-create table sbkavtal.avtalsinnehall(
+create table sbk_avtal.avtalsinnehall(
 	id			serial primary key,
-	innehall		sbkavtal.avtalsinnehallstyp,
-	avtalsid		integer references avtal not null
+	beskrivning		varchar
+	-- här kan läggas till fält för exempelvis värde på innehållet
 );
 
--- insert into sbkavtal.person(first_name, last_name, belagenhetsadress, postnummer, postort, tfn_nummer, epost)
--- values	('Sven', 'Andersson', 'Svedalavägen', '111 11', 'Svedala', '010-100100', 'sven@example.com');
--- 
--- insert into sbkavtal.avtal(diarienummer, startdate, enddate, orgnummer, status, avtalstecknare, avtalskontakt)
--- values	(314, '2017-01-01', CURRENT_DATE, '820403', 'Aktivt', 1, 1);
--- -- 	(1000, CURRENT_DATE, CURRENT_DATE, '820403', 'Aktivt'),
--- -- 	(666, '1982-04-03', CURRENT_DATE, '140807', 'Inaktivt');
--- 
--- select * from sbkavtal.avtal inner join sbkavtal.person
--- on sbkavtal.avtal.avtalstecknare = sbkavtal.person.id;
--- --select * from person;
--- 
--- insert into sbkavtal.avtalsinnehall(innehall, avtalsid)
--- select 'avtalsinnehåll 1', id from sbkavtal.avtal where diarienummer = 314;
--- 
--- 
--- 
--- select * from sbkavtal.avtalsinnehall;
+create table sbk_avtal.map_avtal_innehall(
+	id			serial primary key,
+	avtal_id		integer references sbk_avtal.avtal,
+	avtalsinnehall_id	integer references sbk_avtal.avtalsinnehall
+);
+
+--tabell som loggar uppdateringar av avtalstabellen, med samma kolumner plus användarnamn för den som uppdaterar samt timestamp
+create table sbk_avtal.log_updates(
+	id			serial primary key,
+
+	avtal_id		integer references sbk_avtal.avtal,
+	uppdaterat_av		varchar,
+	created_at		timestamp default now(),
+	
+	diarienummer		bigint,
+	status			avtalsstatus,
+	startdate		date,
+	enddate			date,
+	orgnummer		varchar(20),
+
+	motpartstyp		motpartstyp,
+	SBKavtalsid		int,
+	scan_url		varchar(512),
+	enligt_avtal		text,
+	internt_alias		text,
+	kommentar		text,
+
+	avtalstecknare		integer references sbk_avtal.person,
+	avtalskontakt		integer references sbk_avtal.person,
+
+	upphandlat_av		integer references sbk_avtal.person,
+	ansvarig_SBK		integer references sbk_avtal.person,
+	ansvarig_avd		varchar(50),
+	ansvarig_enhet		varchar(50),
+
+-- 	avtalsinnehall		text,
+	avtalsvarde		bigint,
+
+	datakontakt		integer references sbk_avtal.person,
+
+-- 	intaktskontering	integer references sbk_avtal.intaktskontering,
+	konto			varchar,
+	kstl			varchar,
+	vht			varchar,
+	mtp			varchar,
+	aktivitet		varchar,
+	objekt			varchar,
+	projekt			varchar,
+	
+	fakt_adress		integer references sbk_avtal.fakturaadress,
+
+	vitalt_avtal		boolean,
+	gallringsår		date
+);
+
 

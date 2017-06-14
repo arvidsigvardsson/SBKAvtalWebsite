@@ -9,7 +9,44 @@ using Npgsql;
 /// </summary>
 public static class Avtalsfactory
 {
-    public const string Fields = "id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar";
+    // public const string Fields = "id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar";
+
+    public static List<Person> GetPersons(NpgsqlDataReader reader)
+    {
+        var lst = new List<Person>();
+
+        while (reader.Read())
+        {
+            lst.Add(new Person
+            {
+                id = reader.GetInt32(0),
+                FirstName = reader.GetString(1),
+                LastName = reader.GetString(2),
+                Belagenhetsadress = reader.GetString(3),
+                Postnummer = reader.GetString(4),
+                Postort = reader.GetString(5),
+                Telefonnummer = reader.GetString(6),
+                epost = reader.GetString(7)
+            });
+        }
+        return lst;
+    }
+
+    public static List<Person> GetNamesAndId(NpgsqlDataReader reader)
+    {
+        var lst = new List<Person>();
+
+        while (reader.Read())
+        {
+            lst.Add(new Person
+            {
+                id = reader.GetInt32(0),
+                FirstName = reader.GetString(1),
+                LastName = reader.GetString(2),
+            });
+        }
+        return lst;
+    }
 
     public static List<Avtalsmodel> ParseAvtal(NpgsqlDataReader reader)
     {
@@ -17,14 +54,14 @@ public static class Avtalsfactory
 
         while (reader.Read())
         {
-            long? diarienr;
+            string diarienr;
             if (reader.GetValue(1) != DBNull.Value)
             {
-                diarienr = reader.GetInt64(1);
+                diarienr = reader.GetString(1);
             }
             else
             {
-                diarienr = null;
+                diarienr = "";
             }
 
             DateTime? sd;
@@ -47,9 +84,29 @@ public static class Avtalsfactory
                 ed = null;
             }
 
+            //string mptyp;
+            //if (reader.GetString(5) != DBNull.Value)
+            //{
+            //    mptyp = reader.GetString(5);
+            //}
+            //else
+            //{
+            //    mptyp = "";
+            //}
+
+            long dbid;
+            if (reader.GetValue(0) != DBNull.Value)
+            {
+                dbid = reader.GetInt32(0);
+            }
+            else
+            {
+                dbid = -1;
+            }
+
             lst.Add(new Avtalsmodel
             {
-                id = reader.GetInt32(0),
+                id = dbid, // reader.GetInt32(0),
                 diarienummer = diarienr,
                 startdate = sd,
                 enddate = ed,

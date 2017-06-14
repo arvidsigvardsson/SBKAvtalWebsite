@@ -2,18 +2,15 @@
     CodeFile="avtal_detail.aspx.cs" Inherits="avtal_detail" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
-    
+    <script src="js/validering.js" type="text/javascript"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="Server">
-    <asp:Label ID="debugl" runat="server" Text="debug"></asp:Label>
-
-    <asp:Label ID="debugl2" runat="server" Text="debug"></asp:Label>
 
     <form class="form-horizontal" method="post" action="avtal_detail.aspx">
         <div class="form-group">
             <asp:Label ID="Label1" runat="server" Text="Diarienummer" class="control-label col-sm-2"></asp:Label>
                 <div class="col-sm-10">
-            <asp:TextBox ID="diarietb" runat="server" class="form-control"></asp:TextBox>
+            <asp:TextBox ID="diarietb" runat="server" class="form-control" ></asp:TextBox>
             </div>
         </div>
     
@@ -60,9 +57,46 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <asp:Label ID="Label7" runat="server" Text="Organisationsnummer" class="control-label col-sm-2"></asp:Label>
+            <div class="col-sm-10">
+                <asp:TextBox ID="orgnrtb" runat="server" class="form-control" onchange="validOrgNr()" ClientIDMode="Static"></asp:TextBox>
+                <div class="text-danger" id="orgnrerror" style="display:none">fel form</div>
+            </div>
+            
+        </div>
+
+        <div class="form-group">
+            <asp:Label ID="Label10" runat="server" Text="Enligt avtal" class="control-label col-sm-2"></asp:Label>
+            <div class="col-sm-10">
+                <asp:TextBox ID="enlavttb" runat="server" class="form-control"></asp:TextBox>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <asp:Label ID="Label8" runat="server" Text="Internt alias" class="control-label col-sm-2"></asp:Label>
+            <div class="col-sm-10">
+                <asp:TextBox ID="intidtb" runat="server" class="form-control"></asp:TextBox>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <asp:Label ID="Label9" runat="server" Text="Kommentar" class="control-label col-sm-2"></asp:Label>
+            <div class="col-sm-10">
+                <asp:TextBox ID="kommentartb" runat="server" TextMode="MultiLine" class="form-control"></asp:TextBox>
+            </div>
+        </div>
+
         <asp:Button ID="submitbtn" runat="server" Text="Skicka" onclick="Button1_Click" class="btn btn-primary"/>
         
         <%--<input type="submit" value="Skicka" runat="server" name="submitbtn"/>--%>
         
     </form>
-</asp:Content>
+
+    <asp:Label ID="debugl" runat="server" Text="debug"></asp:Label>
+
+    <asp:Label ID="debugl2" runat="server" Text="debug"></asp:Label>
+
+    
+
+    </asp:Content>

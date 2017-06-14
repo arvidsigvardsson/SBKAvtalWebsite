@@ -9,7 +9,7 @@ using System.Web;
 public class Avtalsmodel
 {
     public long id { get; set; }
-    public long? diarienummer { get; set; }
+    public string diarienummer { get; set; }
     public DateTime? startdate { get; set; }
     public DateTime? enddate { get; set; }
     public string orgnummer { get; set; }

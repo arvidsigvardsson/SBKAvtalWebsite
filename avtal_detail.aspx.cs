@@ -12,12 +12,23 @@ public partial class avtal_detail : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        debugl.Text = Page.Header.Description;
 
         if (Page.IsPostBack)
         {
             // kolla om det är ett nytt avtal eller uppdaterat avtal, hur ska detta göras?
+            // Page.MetaDescription = "postback";
+            if (submitbtn.Text == "Lägg till nytt avtal")
+            {
+                PostbackNewAvtal();
+            }
+            else
+            {
+                PostbackUpdateAvtal();
+            }
 
-            PostbackNewAvtal();           
+            Response.Redirect("./sparat_avtal.aspx");
+            return;
         }
 
         var test = new Avtalsmodel();
@@ -26,12 +37,19 @@ public partial class avtal_detail : System.Web.UI.Page
         //diarietb.Text = "endast läsning";
         //statusdd.SelectedIndex = 1;
 
+        var avtal = new Avtalsmodel();
+        var persons = new List<Person>();
+        
         if (Request.Params["nytt_avtal".ToLower()] == "true")
         {
-            debugl.Text = "nytt avtal";
+            // debugl.Text = "nytt avtal";
+            submitbtn.Text = "Lägg till nytt avtal";
+            return;
         }
         else
         {
+            submitbtn.Text = "Uppdatera avtal";
+
             var dbid = Request.Params["id"];
 
             string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
@@ -39,6 +57,7 @@ public partial class avtal_detail : System.Web.UI.Page
             {
                 conn.Open();
 
+                // avtal
                 var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar from sbk_avtal.avtal where id = @p1;";
                 using (var cmd = new NpgsqlCommand(sqlquery, conn))
                 {
@@ -48,24 +67,56 @@ public partial class avtal_detail : System.Web.UI.Page
 
                     using (var reader = cmd.ExecuteReader())
                     {
-                        while (reader.Read())
-                        {
-                        }
+                        avtal = Avtalsfactory.ParseAvtal(reader).First();
+                    }
+                }
+
+                // personer
+                var personquery = "select id, first_name, last_name from sbk_avtal.person;";
+                using (var cmd = new NpgsqlCommand(personquery, conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        persons = Avtalsfactory.GetNamesAndId(reader);
                     }
                 }
             }
         }
+
+        diarietb.Text = avtal.diarienummer;
+        startdatetb.Text = string.Format("{0:d}", avtal.startdate);
+        enddate.Text = string.Format("{0:d}", avtal.enddate);
+
+        statusdd.Items.FindByValue(avtal.status).Selected = true;
+        motpartsdd.Items.FindByValue(avtal.motpartstyp).Selected = true;
+
+        sbkidtb.Text = avtal.sbkid.ToString();
+        orgnrtb.Text = avtal.orgnummer;
+        enlavttb.Text = avtal.enligtAvtal;
+        intidtb.Text = avtal.interntAlias;
+        kommentartb.Text = avtal.kommentar;
+
+        Session.Add("persons", persons);
+
+        // TODO slutade här onsdag 14/6
+        // for
+
+    }
+
+    private void PostbackUpdateAvtal()
+    {
+        debugl.Text = "uppdaterar avtal";
     }
 
     private void PostbackNewAvtal()
     {
-        debugl.Text = diarietb.Text;
+        debugl.Text = "sparar nytt avtal";
     }
 
 
     protected void Button1_Click(object sender, EventArgs e)
     {
-        submitbtn.Text = "Skickat!";
+        submitbtn.Text = "Sparat";
         submitbtn.CssClass = "btn btn-success";
         // debugl.Text = diarietb.Text;
     }

@@ -33,6 +33,10 @@ public partial class avtal : System.Web.UI.Page
             }
         }
 
+        Session.Add("avtalslista", lst);
+
+        
+
         //var row = new TableRow();
         //var cell1 = new TableCell();
         //cell1.Text = "en cell";
@@ -113,4 +117,5 @@ public partial class avtal : System.Web.UI.Page
     //    public string scan_url { get; set; }
     //    public string kommentar { get; set; }
     //}
+   
 }

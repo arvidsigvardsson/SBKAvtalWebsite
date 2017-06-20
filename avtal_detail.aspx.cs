@@ -27,7 +27,7 @@ public partial class avtal_detail : System.Web.UI.Page
                 PostbackUpdateAvtal();
             }
 
-            Response.Redirect("./sparat_avtal.aspx");
+            // Response.Redirect("./sparat_avtal.aspx");
             return;
         }
 
@@ -40,6 +40,31 @@ public partial class avtal_detail : System.Web.UI.Page
         var avtal = new Avtalsmodel();
         var persons = new List<Person>();
         
+        // ta fram personer till rullister
+        string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
+        using (var conn = new NpgsqlConnection(connstr))
+        {
+            conn.Open();
+            var personquery = "select id, first_name, last_name from sbk_avtal.person order by last_name asc;";
+            using (var cmd = new NpgsqlCommand(personquery, conn))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    persons = Avtalsfactory.GetNamesAndId(reader);
+                }
+            }
+        }
+
+        // sparar i sessionen
+        Session.Add("persons", persons);
+
+        for (int i = 0; i < persons.Count; i++)
+        {
+            var person = persons[i];
+            person.dropdownindex = i;
+            persondd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
+        }
+
         if (Request.Params["nytt_avtal".ToLower()] == "true")
         {
             // debugl.Text = "nytt avtal";
@@ -52,7 +77,7 @@ public partial class avtal_detail : System.Web.UI.Page
 
             var dbid = Request.Params["id"];
 
-            string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
+            // string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
             using (var conn = new NpgsqlConnection(connstr))
             {
                 conn.Open();
@@ -72,14 +97,14 @@ public partial class avtal_detail : System.Web.UI.Page
                 }
 
                 // personer
-                var personquery = "select id, first_name, last_name from sbk_avtal.person;";
-                using (var cmd = new NpgsqlCommand(personquery, conn))
-                {
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        persons = Avtalsfactory.GetNamesAndId(reader);
-                    }
-                }
+                //var personquery = "select id, first_name, last_name from sbk_avtal.person;";
+                //using (var cmd = new NpgsqlCommand(personquery, conn))
+                //{
+                //    using (var reader = cmd.ExecuteReader())
+                //    {
+                //        persons = Avtalsfactory.GetNamesAndId(reader);
+                //    }
+                //}
             }
         }
 
@@ -96,7 +121,7 @@ public partial class avtal_detail : System.Web.UI.Page
         intidtb.Text = avtal.interntAlias;
         kommentartb.Text = avtal.kommentar;
 
-        Session.Add("persons", persons);
+        
 
         // TODO slutade här onsdag 14/6
         // for
@@ -105,7 +130,10 @@ public partial class avtal_detail : System.Web.UI.Page
 
     private void PostbackUpdateAvtal()
     {
-        debugl.Text = "uppdaterar avtal";
+        var idx = persondd.SelectedIndex;
+        var persons = (List<Person>)Session["persons"];
+        var person = persons.Where(x => x.dropdownindex == idx).First();
+        debugl.Text = person.LastName;
     }
 
     private void PostbackNewAvtal()

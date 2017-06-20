@@ -16,4 +16,5 @@ public class Person
     public string Postort { get; set; }
     public string Telefonnummer { get; set; }
     public string epost { get; set; }
+    public int dropdownindex { get; set; }
 }

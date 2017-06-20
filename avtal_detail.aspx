@@ -87,6 +87,14 @@
             </div>
         </div>
 
+         <div class="form-group">
+            <asp:Label ID="Label11" runat="server" Text="Avtalstecknare" class="control-label col-sm-2"></asp:Label>
+            <div class="col-sm-10">
+                <asp:DropDownList ID="persondd" runat="server">
+                </asp:DropDownList>
+            </div>
+        </div>
+
         <asp:Button ID="submitbtn" runat="server" Text="Skicka" onclick="Button1_Click" class="btn btn-primary"/>
         
         <%--<input type="submit" value="Skicka" runat="server" name="submitbtn"/>--%>

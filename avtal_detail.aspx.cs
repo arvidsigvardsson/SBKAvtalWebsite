@@ -12,7 +12,7 @@ public partial class avtal_detail : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        debugl.Text = Page.Header.Description;
+        // debugl.Text = Page.Header.Description;
 
         if (Page.IsPostBack)
         {
@@ -63,7 +63,14 @@ public partial class avtal_detail : System.Web.UI.Page
             var person = persons[i];
             person.dropdownindex = i;
             persondd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
+            kontaktdd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
+            upphandlatdd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
         }
+
+        // lägger till val för ny person
+        persondd.Items.Add("+ Ny avtalstecknare");
+        kontaktdd.Items.Add("+ Ny avtalskontakt");
+        upphandlatdd.Items.Add("+ Ny person");
 
         if (Request.Params["nytt_avtal".ToLower()] == "true")
         {
@@ -83,7 +90,7 @@ public partial class avtal_detail : System.Web.UI.Page
                 conn.Open();
 
                 // avtal
-                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar from sbk_avtal.avtal where id = @p1;";
+                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar,  avtalstecknare, avtalskontakt, ansvarig_sbk, ansvarig_avd, ansvarig_enhet from sbk_avtal.avtal where id = @p1;";
                 using (var cmd = new NpgsqlCommand(sqlquery, conn))
                 {
                     // cmd.Connection = conn;
@@ -121,10 +128,7 @@ public partial class avtal_detail : System.Web.UI.Page
         intidtb.Text = avtal.interntAlias;
         kommentartb.Text = avtal.kommentar;
 
-        
-
-        // TODO slutade här onsdag 14/6
-        // for
+        debugl.Text = "";
 
     }
 
@@ -133,12 +137,12 @@ public partial class avtal_detail : System.Web.UI.Page
         var idx = persondd.SelectedIndex;
         var persons = (List<Person>)Session["persons"];
         var person = persons.Where(x => x.dropdownindex == idx).First();
-        debugl.Text = person.LastName;
+        // debugl.Text = person.LastName;
     }
 
     private void PostbackNewAvtal()
     {
-        debugl.Text = "sparar nytt avtal";
+        // debugl.Text = "sparar nytt avtal";
     }
 
 
@@ -147,5 +151,45 @@ public partial class avtal_detail : System.Web.UI.Page
         submitbtn.Text = "Sparat";
         submitbtn.CssClass = "btn btn-success";
         // debugl.Text = diarietb.Text;
+    }
+
+    protected void persondd_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (persondd.SelectedValue == "+ Ny avtalstecknare")
+        {
+            Response.Redirect("./person_detail.aspx?ny_perspon=true");
+        }
+
+        if (submitbtn.Text == "Sparat")
+        {
+            submitbtn.Text = "Uppdatera";
+            submitbtn.Enabled = true;
+        }
+    }
+    protected void kontaktdd_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (kontaktdd.SelectedValue == "+ Ny avtalstecknare")
+        {
+            Response.Redirect("./person_detail.aspx?ny_perspon=true");
+        }
+
+        if (submitbtn.Text == "Sparat")
+        {
+            submitbtn.Text = "Uppdatera";
+            submitbtn.Enabled = true;
+        }
+    }
+    protected void upphandlatdd_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (upphandlatdd.SelectedValue == "+ Ny avtalstecknare")
+        {
+            Response.Redirect("./person_detail.aspx?ny_perspon=true");
+        }
+
+        if (submitbtn.Text == "Sparat")
+        {
+            submitbtn.Text = "Uppdatera";
+            submitbtn.Enabled = true;
+        }
     }
 }

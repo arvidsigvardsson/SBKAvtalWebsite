@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Npgsql;
+using System.Configuration;
 
 /// <summary>
 /// Summary description for Avtalsfactory
@@ -104,6 +105,8 @@ public static class Avtalsfactory
                 dbid = -1;
             }
 
+
+            // TODO lägg till id för avtalstecknare, kontakt etc, så att rätt person väljs i rullisterna
             lst.Add(new Avtalsmodel
             {
                 id = dbid, // reader.GetInt32(0),
@@ -122,5 +125,39 @@ public static class Avtalsfactory
         }
 
         return lst;
+    }
+
+    public static Person ParsePerson(int id)
+    {
+        Person person;
+        string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
+        using (var conn = new NpgsqlConnection(connstr))
+        {
+            conn.Open();
+
+            var personquery = "select id, first_name, last_name, belagenhetsadress, postnummer, postort, tfn_nummmer, epost from sbk_avtal.person where person.id = @id";// "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar,  avtalstecknare, avtalskontakt, ansvarig_sbk, ansvarig_avd, ansvarig_enhet from sbk_avtal.avtal where id = @p1;";
+            using (var cmd = new NpgsqlCommand(personquery, conn))
+            {
+                cmd.Parameters.AddWithValue("id", id);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    reader.Read();
+
+                    person = new Person
+                    {
+                        id = reader.GetInt32(0),
+                        FirstName = reader.GetString(1),
+                        LastName = reader.GetString(2),
+                        Belagenhetsadress = reader.GetString(3),
+                        Postnummer = reader.GetString(4),
+                        Postort = reader.GetString(5),
+                        Telefonnummer = reader.GetString(6),
+                        epost = reader.GetString(7)
+                    };
+                }
+            }
+        }
+        return person;
     }
 }

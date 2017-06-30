@@ -20,4 +20,9 @@ public class Avtalsmodel
     public int sbkid { get; set; }
     public string scan_url { get; set; }
     public string kommentar { get; set; }
+    public int avtalstecknare { get; set; }
+    public int avtalskontakt { get; set; }
+    public int upphandlat_av { get; set; }
+    public string ansvarig_avdelning { get; set; }
+    public string ansvarig_enhet { get; set; }
 }

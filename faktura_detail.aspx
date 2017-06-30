@@ -1,10 +1,10 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="person_detail.aspx.cs" Inherits="person_detail" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="faktura_detail.aspx.cs" Inherits="faktura_detail" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
     <script src="js/person_detail.js" type="text/javascript"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
-    <form class="form-horizontal" method="post" action="avtal_detail.aspx">
+ <form class="form-horizontal" method="post" action="avtal_detail.aspx">
         <div class="form-group">
             <asp:Label ID="Label1" runat="server" Text="Förnamn" class="control-label col-sm-2"></asp:Label>
                 <div class="col-sm-10">
@@ -37,20 +37,6 @@
             <asp:Label ID="Label5" runat="server" Text="Postort" class="control-label col-sm-2"></asp:Label>
                 <div class="col-sm-10">
             <asp:TextBox ID="postorttb" runat="server" class="form-control" ></asp:TextBox>
-            </div>
-        </div>
-
-         <div class="form-group">
-            <asp:Label ID="Label6" runat="server" Text="Telefonnummer" class="control-label col-sm-2"></asp:Label>
-                <div class="col-sm-10">
-            <asp:TextBox ID="tfntb" runat="server" class="form-control" ></asp:TextBox>
-            </div>
-        </div>
-
-         <div class="form-group">
-            <asp:Label ID="Label7" runat="server" Text="Epost" class="control-label col-sm-2"></asp:Label>
-                <div class="col-sm-10">
-            <asp:TextBox ID="eposttb" runat="server" class="form-control" ></asp:TextBox>
             </div>
         </div>
 

@@ -12,7 +12,13 @@
             <a href="./avtal.aspx">Alla avtal</a>
         </li>
         <li>
-            <a href="avtal_detail.aspx?nytt_avtal=true">Lägg till nytt avtal</a>
+            <a href="./avtal_detail.aspx?nytt_avtal=true">Lägg till nytt avtal</a>
+        </li>
+        <li>
+            <a href="./person_detail.aspx?ny_person=true">Lägg till en person i databasen</a>
+        </li>
+        <li>
+            <a href="./faktura_detail.aspx?ny_adress=true">Lägg till en fakturaadress</a>    
         </li>
     </ul>
    <asp:Label ID="userlabel" runat="server" Text="Label"></asp:Label>

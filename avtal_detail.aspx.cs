@@ -62,20 +62,36 @@ public partial class avtal_detail : System.Web.UI.Page
         {
             var person = persons[i];
             person.dropdownindex = i;
-            persondd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
+            avtalstecknaredd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
             kontaktdd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
             upphandlatdd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
+            ansvarig_sbkdd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
+            datakontaktdd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
         }
 
         // lägger till val för ny person
-        persondd.Items.Add("+ Ny avtalstecknare");
+        avtalstecknaredd.Items.Add("+ Ny avtalstecknare");
         kontaktdd.Items.Add("+ Ny avtalskontakt");
         upphandlatdd.Items.Add("+ Ny person");
+        ansvarig_sbkdd.Items.Add("+ Ny person");
+        datakontaktdd.Items.Add("+ Ny person");
+
+        // lägger till tom rad
+        avtalstecknaredd.Items.Add("");
+        kontaktdd.Items.Add("");
+        upphandlatdd.Items.Add("");
+        ansvarig_sbkdd.Items.Add("");
+        datakontaktdd.Items.Add("");
 
         if (Request.Params["nytt_avtal".ToLower()] == "true")
         {
             // debugl.Text = "nytt avtal";
             submitbtn.Text = "Lägg till nytt avtal";
+            avtalstecknaredd.Items.FindByText("").Selected = true;
+            kontaktdd.Items.FindByText("").Selected = true;
+            upphandlatdd.Items.FindByText("").Selected = true;
+            ansvarig_sbkdd.Items.FindByText("").Selected = true;
+            datakontaktdd.Items.FindByText("").Selected = true;
             return;
         }
         else
@@ -90,7 +106,7 @@ public partial class avtal_detail : System.Web.UI.Page
                 conn.Open();
 
                 // avtal
-                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar,  avtalstecknare, avtalskontakt, ansvarig_sbk, ansvarig_avd, ansvarig_enhet from sbk_avtal.avtal where id = @p1;";
+                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar,  avtalstecknare, avtalskontakt, ansvarig_sbk, ansvarig_avd, ansvarig_enhet, upphandlat_av, datakontakt from sbk_avtal.avtal where id = @p1;";
                 using (var cmd = new NpgsqlCommand(sqlquery, conn))
                 {
                     // cmd.Connection = conn;
@@ -128,15 +144,67 @@ public partial class avtal_detail : System.Web.UI.Page
         intidtb.Text = avtal.interntAlias;
         kommentartb.Text = avtal.kommentar;
 
+        //dropdowns
+        Person avtalstecknare = persons.Where(x => x.id == avtal.avtalstecknare).FirstOrDefault();
+        if (avtalstecknare != null)
+        {
+            avtalstecknaredd.SelectedIndex = (int)avtalstecknare.dropdownindex;
+        }
+        else
+        {
+            avtalstecknaredd.Items.FindByValue("").Selected = true;
+        }
+
+        Person avtalskontakt = persons.Where(x => x.id == avtal.avtalskontakt).FirstOrDefault();
+        if (avtalskontakt != null)
+        {
+            kontaktdd.SelectedIndex = (int)avtalskontakt.dropdownindex;
+        }
+        else
+        {
+            kontaktdd.Items.FindByValue("").Selected = true;
+        }
+
+        Person ansvarig_sbk = persons.Where(x => x.id == avtal.ansvarig_sbk).FirstOrDefault();
+        if (ansvarig_sbk != null)
+        {
+            ansvarig_sbkdd.SelectedIndex = (int)ansvarig_sbk.dropdownindex;
+        }
+        else
+        {
+            ansvarig_sbkdd.Items.FindByValue("").Selected = true;
+        }
+
+        Person upphandlat_av = persons.Where(x => x.id == avtal.upphandlat_av).FirstOrDefault();
+        if (upphandlat_av != null)
+        {
+            upphandlatdd.SelectedIndex = (int)upphandlat_av.dropdownindex;
+        }
+        else
+        {
+            upphandlatdd.Items.FindByValue("").Selected = true;
+        }
+
+        Person datakontakt = persons.Where(x => x.id == avtal.datakontakt).FirstOrDefault();
+        if (datakontakt != null)
+        {
+            datakontaktdd.SelectedIndex = (int)datakontakt.dropdownindex;
+        }
+        else
+        {
+            datakontaktdd.Items.FindByValue("").Selected = true;
+        }
+
+
         debugl.Text = "";
 
     }
 
     private void PostbackUpdateAvtal()
     {
-        var idx = persondd.SelectedIndex;
-        var persons = (List<Person>)Session["persons"];
-        var person = persons.Where(x => x.dropdownindex == idx).First();
+        //var idx = avtalstecknaredd.SelectedIndex;
+        //var persons = (List<Person>)Session["persons"];
+        //var person = persons.Where(x => x.dropdownindex == idx).First();
         // debugl.Text = person.LastName;
     }
 
@@ -155,7 +223,7 @@ public partial class avtal_detail : System.Web.UI.Page
 
     protected void persondd_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (persondd.SelectedValue == "+ Ny avtalstecknare")
+        if (avtalstecknaredd.SelectedValue == "+ Ny avtalstecknare")
         {
             Response.Redirect("./person_detail.aspx?ny_perspon=true");
         }

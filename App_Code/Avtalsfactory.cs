@@ -105,6 +105,55 @@ public static class Avtalsfactory
                 dbid = -1;
             }
 
+            long? avtalstecknare;
+            if (reader.GetValue(12) != DBNull.Value)
+            {
+                avtalstecknare = reader.GetInt32(12);
+            }
+            else
+            {
+                avtalstecknare = null;
+            }
+
+            long? avtalskontakt;
+            if (reader.GetValue(13) != DBNull.Value)
+            {
+                avtalskontakt = reader.GetInt32(13);
+            }
+            else
+            {
+                avtalskontakt = null;
+            }
+
+            long? ansvarig_sbk;
+            if (reader.GetValue(14) != DBNull.Value)
+            {
+                ansvarig_sbk = reader.GetInt32(14);
+            }
+            else
+            {
+                ansvarig_sbk = null;
+            }
+
+            long? upphandlat_av;
+            if (reader.GetValue(17) != DBNull.Value)
+            {
+                upphandlat_av = reader.GetInt32(17);
+            }
+            else
+            {
+                upphandlat_av = null;
+            }
+
+            long? datakontakt;
+            if (reader.GetValue(18) != DBNull.Value)
+            {
+                datakontakt = reader.GetInt32(18);
+            }
+            else
+            {
+                datakontakt = null;
+            }
 
             // TODO lägg till id för avtalstecknare, kontakt etc, så att rätt person väljs i rullisterna
             lst.Add(new Avtalsmodel
@@ -120,7 +169,14 @@ public static class Avtalsfactory
                 orgnummer = reader.GetString(8),
                 enligtAvtal = reader.GetString(9),
                 interntAlias = reader.GetString(10),
-                kommentar = reader.GetString(11)
+                kommentar = reader.GetString(11),
+                avtalstecknare = avtalstecknare,
+                avtalskontakt = avtalskontakt,
+                ansvarig_sbk = ansvarig_sbk,
+                upphandlat_av = upphandlat_av,
+                ansvarig_avdelning = reader.GetString(15),
+                ansvarig_enhet = reader.GetString(16),
+                datakontakt = datakontakt
             });
         }
 

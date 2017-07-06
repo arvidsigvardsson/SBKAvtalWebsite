@@ -39,7 +39,8 @@ public partial class avtal_detail : System.Web.UI.Page
 
         var avtal = new Avtalsmodel();
         var persons = new List<Person>();
-        
+        var innehallslist = new List<Innehall>();
+
         // ta fram personer till rullister
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
         using (var conn = new NpgsqlConnection(connstr))
@@ -51,6 +52,22 @@ public partial class avtal_detail : System.Web.UI.Page
                 using (var reader = cmd.ExecuteReader())
                 {
                     persons = Avtalsfactory.GetNamesAndId(reader);
+                }
+            }
+
+            // fyll lista med avtalsinnehåll
+            using (var cmd = new NpgsqlCommand("select id, beskrivning from sbk_avtal.avtalsinnehall;", conn))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        innehallslist.Add(new Innehall
+                        {
+                            id = reader.GetInt32(0),
+                            beskrivning = reader.GetString(1)
+                        });
+                    }
                 }
             }
         }
@@ -82,6 +99,14 @@ public partial class avtal_detail : System.Web.UI.Page
         upphandlatdd.Items.Add("");
         ansvarig_sbkdd.Items.Add("");
         datakontaktdd.Items.Add("");
+
+        // avtalsinnehåll
+        for (int i = 0; i < innehallslist.Count; i++)
+        {
+            Innehall inn = innehallslist[i];
+            innehallcbl.Items.Add(new ListItem(inn.beskrivning));
+            inn.ListIndex = i;
+        }
 
         if (Request.Params["nytt_avtal".ToLower()] == "true")
         {
@@ -119,15 +144,22 @@ public partial class avtal_detail : System.Web.UI.Page
                     }
                 }
 
-                // personer
-                //var personquery = "select id, first_name, last_name from sbk_avtal.person;";
-                //using (var cmd = new NpgsqlCommand(personquery, conn))
-                //{
-                //    using (var reader = cmd.ExecuteReader())
-                //    {
-                //        persons = Avtalsfactory.GetNamesAndId(reader);
-                //    }
-                //}
+                using (var cmd = new NpgsqlCommand("select avtalsinnehall_id from sbk_avtal.map_avtal_innehall where avtal_id = @avtal_id;", conn))
+                {
+                    cmd.Parameters.AddWithValue("avtal_id", dbid);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        // kryssa för avtalsinnehåll
+                        while (reader.Read())
+                        {
+                            var innehalls_id = reader.GetInt32(0);
+                            var idx = innehallslist.Where(x => x.id == innehalls_id).First().ListIndex;
+                            innehallcbl.Items[idx].Selected = true;
+                        }
+
+                    }
+                }
+
             }
         }
 
@@ -143,6 +175,8 @@ public partial class avtal_detail : System.Web.UI.Page
         enlavttb.Text = avtal.enligtAvtal;
         intidtb.Text = avtal.interntAlias;
         kommentartb.Text = avtal.kommentar;
+        ansvavdtb.Text = avtal.ansvarig_avdelning;
+        ansvenhtb.Text = avtal.ansvarig_enhet;
 
         //dropdowns
         Person avtalstecknare = persons.Where(x => x.id == avtal.avtalstecknare).FirstOrDefault();
@@ -206,11 +240,13 @@ public partial class avtal_detail : System.Web.UI.Page
         //var persons = (List<Person>)Session["persons"];
         //var person = persons.Where(x => x.dropdownindex == idx).First();
         // debugl.Text = person.LastName;
+        ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Uppdaterar')", true);
     }
 
     private void PostbackNewAvtal()
     {
         // debugl.Text = "sparar nytt avtal";
+        ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Sparar nytt')", true);
     }
 
 
@@ -259,5 +295,12 @@ public partial class avtal_detail : System.Web.UI.Page
             submitbtn.Text = "Uppdatera";
             submitbtn.Enabled = true;
         }
+    }
+
+    private class Innehall
+    {
+        public int id { get; set; }
+        public string beskrivning { get; set; }
+        public int ListIndex { get; set; }
     }
 }

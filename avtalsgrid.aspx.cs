@@ -26,6 +26,14 @@ public partial class avtalsgrid : System.Web.UI.Page
 
         }
         dt = ds.Tables[0];
+
+        // länkning
+        var hlf = new HyperLinkField();
+        hlf.HeaderText = "";
+
+        dt.Columns.Add(hlf);
+
+
         AvtalTable.DataSource = dt;
         AvtalTable.DataBind();
 

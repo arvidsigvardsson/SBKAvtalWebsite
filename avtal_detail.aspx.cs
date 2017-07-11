@@ -16,18 +16,6 @@ public partial class avtal_detail : System.Web.UI.Page
 
         if (Page.IsPostBack)
         {
-            // kolla om det är ett nytt avtal eller uppdaterat avtal, hur ska detta göras?
-            // Page.MetaDescription = "postback";
-            if (submitbtn.Text == "Lägg till nytt avtal")
-            {
-                PostbackNewAvtal();
-            }
-            else
-            {
-                PostbackUpdateAvtal();
-            }
-
-            // Response.Redirect("./sparat_avtal.aspx");
             return;
         }
 
@@ -87,8 +75,8 @@ public partial class avtal_detail : System.Web.UI.Page
         }
 
         // lägger till val för ny person
-        avtalstecknaredd.Items.Add("+ Ny avtalstecknare");
-        kontaktdd.Items.Add("+ Ny avtalskontakt");
+        avtalstecknaredd.Items.Add("+ Ny person"); // ("+ Ny avtalstecknare");
+        kontaktdd.Items.Add("+ Ny person");
         upphandlatdd.Items.Add("+ Ny person");
         ansvarig_sbkdd.Items.Add("+ Ny person");
         datakontaktdd.Items.Add("+ Ny person");
@@ -111,7 +99,8 @@ public partial class avtal_detail : System.Web.UI.Page
         if (Request.Params["nytt_avtal".ToLower()] == "true")
         {
             // debugl.Text = "nytt avtal";
-            submitbtn.Text = "Lägg till nytt avtal";
+            //submitbtn.Text = "Lägg till nytt avtal";
+            SetSubmitButtonAppearance(SubmitButtonState.SparaNytt);
             avtalstecknaredd.Items.FindByText("").Selected = true;
             kontaktdd.Items.FindByText("").Selected = true;
             upphandlatdd.Items.FindByText("").Selected = true;
@@ -121,7 +110,8 @@ public partial class avtal_detail : System.Web.UI.Page
         }
         else
         {
-            submitbtn.Text = "Uppdatera avtal";
+            //submitbtn.Text = "Uppdatera avtal";
+            SetSubmitButtonAppearance(SubmitButtonState.Uppdatera);
 
             var dbid = Request.Params["id"];
 
@@ -257,45 +247,6 @@ public partial class avtal_detail : System.Web.UI.Page
         // debugl.Text = diarietb.Text;
     }
 
-    protected void persondd_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (avtalstecknaredd.SelectedValue == "+ Ny avtalstecknare")
-        {
-            Response.Redirect("./person_detail.aspx?ny_perspon=true");
-        }
-
-        if (submitbtn.Text == "Sparat")
-        {
-            submitbtn.Text = "Uppdatera";
-            submitbtn.Enabled = true;
-        }
-    }
-    protected void kontaktdd_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (kontaktdd.SelectedValue == "+ Ny avtalstecknare")
-        {
-            Response.Redirect("./person_detail.aspx?ny_perspon=true");
-        }
-
-        if (submitbtn.Text == "Sparat")
-        {
-            submitbtn.Text = "Uppdatera";
-            submitbtn.Enabled = true;
-        }
-    }
-    protected void upphandlatdd_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (upphandlatdd.SelectedValue == "+ Ny avtalstecknare")
-        {
-            Response.Redirect("./person_detail.aspx?ny_perspon=true");
-        }
-
-        if (submitbtn.Text == "Sparat")
-        {
-            submitbtn.Text = "Uppdatera";
-            submitbtn.Enabled = true;
-        }
-    }
 
     private class Innehall
     {
@@ -303,4 +254,188 @@ public partial class avtal_detail : System.Web.UI.Page
         public string beskrivning { get; set; }
         public int ListIndex { get; set; }
     }
+
+    protected void Dropdowns_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (avtalstecknaredd.SelectedValue == "+ Ny person")
+        {
+            Response.Redirect("./person_detail.aspx?ny_perspon=true");
+        }
+
+        if (submitbtn.Text == "Sparat")
+        {
+            submitbtn.Text = "Uppdatera";
+            submitbtn.Enabled = true;
+            submitbtn.CssClass = "btn btn-primary";
+        }
+
+        // lägger till ett state att det är en rullist som ändrats, så att postback fungerar korrekt
+        //Session["change in dropdown"] = true;
+        debugl.Text = "dropdown ändrad";
+    }
+
+    protected void submitbtn_Click(object sender, EventArgs e)
+    {
+        // debugl.Text = "submitknapp";
+
+        if (submitbtn.Text == "Spara nytt")
+        {
+            SetSubmitButtonAppearance(SubmitButtonState.Sparat);
+            SaveNewAvtal();
+        }
+        else // if (submitbtn.Text == "Uppdatera")
+        {
+            SetSubmitButtonAppearance(SubmitButtonState.Uppdaterat);
+            UpdateAvtal();
+        }
+
+    }
+
+    private void UpdateAvtal()
+    {
+        debugl.Text = "Update metoden";
+
+        var avtal = GetFormInputs();
+        var id = Request.Params["id"];
+
+        string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
+        using (var conn = new NpgsqlConnection(connstr))
+        {
+            conn.Open();
+            var query = "update sbk_avtal.avtal set(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt) = (@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt) where id = @id;";
+            using (var cmd = new NpgsqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("diarienummer", avtal.diarienummer);
+                cmd.Parameters.AddWithValue("startdate", avtal.startdate);
+                cmd.Parameters.AddWithValue("enddate", avtal.enddate);
+                cmd.Parameters.AddWithValue("status", avtal.status);
+                cmd.Parameters.AddWithValue("motpartstyp", avtal.motpartstyp);
+                cmd.Parameters.AddWithValue("sbkavtalsid", avtal.sbkid);
+                cmd.Parameters.AddWithValue("orgnummer", avtal.orgnummer);
+                cmd.Parameters.AddWithValue("enligt_avtal", avtal.enligtAvtal);
+                cmd.Parameters.AddWithValue("internt_alias", avtal.interntAlias);
+                cmd.Parameters.AddWithValue("kommentar", avtal.kommentar);
+                cmd.Parameters.AddWithValue("ansvarig_avd", avtal.ansvarig_avdelning);
+                cmd.Parameters.AddWithValue("ansvarig_enhet", avtal.ansvarig_enhet);
+                cmd.Parameters.AddWithValue("avtalstecknare", avtal.avtalstecknare);
+                cmd.Parameters.AddWithValue("avtalskontakt", avtal.avtalskontakt);
+                cmd.Parameters.AddWithValue("upphandlat_av", avtal.upphandlat_av);
+                cmd.Parameters.AddWithValue("ansvarig_sbk", avtal.ansvarig_sbk);
+                cmd.Parameters.AddWithValue("datakontakt", avtal.datakontakt);
+
+                cmd.Parameters.AddWithValue("id", id);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+
+    private void SaveNewAvtal()
+    {
+        debugl.Text = "SaveNew metoden";
+
+        Avtalsmodel avtal = GetFormInputs();
+
+
+        string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
+        using (var conn = new NpgsqlConnection(connstr))
+        {
+            conn.Open();
+            var query = "insert into sbk_avtal.avtal(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt) values(@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt);";
+            using (var cmd = new NpgsqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("diarienummer", avtal.diarienummer);
+                cmd.Parameters.AddWithValue("startdate", avtal.startdate);
+                cmd.Parameters.AddWithValue("enddate", avtal.enddate);
+                cmd.Parameters.AddWithValue("status", avtal.status);
+                cmd.Parameters.AddWithValue("motpartstyp", avtal.motpartstyp);
+                cmd.Parameters.AddWithValue("sbkavtalsid", avtal.sbkid);
+                cmd.Parameters.AddWithValue("orgnummer", avtal.orgnummer);
+                cmd.Parameters.AddWithValue("enligt_avtal", avtal.enligtAvtal);
+                cmd.Parameters.AddWithValue("internt_alias", avtal.interntAlias);
+                cmd.Parameters.AddWithValue("kommentar", avtal.kommentar);
+                cmd.Parameters.AddWithValue("ansvarig_avd", avtal.ansvarig_avdelning);
+                cmd.Parameters.AddWithValue("ansvarig_enhet", avtal.ansvarig_enhet);
+                cmd.Parameters.AddWithValue("avtalstecknare", avtal.avtalstecknare);
+                cmd.Parameters.AddWithValue("avtalskontakt", avtal.avtalskontakt);
+                cmd.Parameters.AddWithValue("upphandlat_av", avtal.upphandlat_av);
+                cmd.Parameters.AddWithValue("ansvarig_sbk", avtal.ansvarig_sbk);
+                cmd.Parameters.AddWithValue("datakontakt", avtal.datakontakt);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+    }
+
+    private Avtalsmodel GetFormInputs()
+    {
+        Avtalsmodel avtal = new Avtalsmodel
+        {
+            diarienummer = diarietb.Text,
+            startdate = DateTime.Parse(startdatetb.Text),
+            enddate = DateTime.Parse(enddate.Text),
+            status = statusdd.SelectedValue,
+            motpartstyp = motpartsdd.SelectedValue,
+            sbkid = int.Parse(sbkidtb.Text),
+            orgnummer = orgnrtb.Text,
+            enligtAvtal = enlavttb.Text,
+            interntAlias = intidtb.Text,
+            kommentar = kommentartb.Text,
+            ansvarig_avdelning = ansvavdtb.Text,
+            ansvarig_enhet = ansvenhtb.Text,
+        };
+
+        List<Person> personer = (List<Person>)Session["persons"];
+        avtal.avtalstecknare = personer.Where(x => avtalstecknaredd.SelectedIndex == x.dropdownindex).First().id;
+        avtal.avtalskontakt = personer.Where(x => kontaktdd.SelectedIndex == x.dropdownindex).First().id;
+        avtal.upphandlat_av = personer.Where(x => upphandlatdd.SelectedIndex == x.dropdownindex).First().id;
+        avtal.ansvarig_sbk = personer.Where(x => ansvarig_sbkdd.SelectedIndex == x.dropdownindex).First().id;
+        avtal.datakontakt = personer.Where(x => datakontaktdd.SelectedIndex == x.dropdownindex).First().id;
+        return avtal;
+    }
+
+    
+
+    private void SetSubmitButtonAppearance(SubmitButtonState state)
+    {
+        string text;
+        bool enabled;
+        string cssclass;
+
+        switch (state)
+        {
+            case SubmitButtonState.SparaNytt:
+                text = "Spara nytt";
+                enabled = true;
+                cssclass = "btn btn-primary";
+                break;
+            case SubmitButtonState.Sparat:
+                 text = "Sparat";
+                enabled = false;
+                cssclass = "btn btn-success";
+                break;
+            case SubmitButtonState.Uppdatera:
+                 text = "Uppdatera";
+                enabled = true;
+                cssclass = "btn btn-primary";
+                break;
+            case SubmitButtonState.Uppdaterat:
+                text = "Uppdaterat";
+                enabled = false;
+                cssclass = "btn btn-success";
+                break;
+            default:
+               text = "Spara nytt";
+                enabled = true;
+                cssclass = "btn btn-primary";
+                break;
+        }
+
+        submitbtn.Text = text;
+        submitbtn.Enabled = enabled;
+        submitbtn.CssClass = cssclass;
+    }
+
+    private enum SubmitButtonState { SparaNytt, Sparat, Uppdatera, Uppdaterat }
 }

@@ -22,8 +22,9 @@ function validOrgNr() {
 
 function tbchange(sender) {
     var submitbtn = document.getElementById("submitbtn");
-    if (submitbtn.value === 'Sparat') {
-        submitbtn.enabled = true;
+    if (submitbtn.value === 'Sparat' || submitbtn.value === 'Uppdaterat') {
+        submitbtn.disabled = false;
         submitbtn.value = 'Uppdatera';
+        submitbtn.className = "btn btn-primary";
     }
 }

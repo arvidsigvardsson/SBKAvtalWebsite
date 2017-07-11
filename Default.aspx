@@ -9,7 +9,7 @@
 
     <ul>
         <li>
-            <a href="./avtal.aspx">Alla avtal</a>
+            <a href="./avtalsgrid.aspx">Alla avtal</a>
         </li>
         <li>
             <a href="./avtal_detail.aspx?nytt_avtal=true">Lägg till nytt avtal</a>
@@ -23,6 +23,9 @@
         <li>
             <a href="./testepost.aspx">Testa epost</a>
         </li>
+        <%--<li>
+            <a href="./avtalsgrid.aspx">Avtal som gridview</a>
+        </li>--%>
     </ul>
    <asp:Label ID="userlabel" runat="server" Text="Label"></asp:Label>
    <asp:Label ID="auth" runat="server" Text="Label"></asp:Label>

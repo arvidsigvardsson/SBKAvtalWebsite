@@ -9,6 +9,8 @@
     <div class="form-group row">
         <asp:Label ID="Label1" runat="server" Text="Diarienummer" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
+            <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" 
+                ControlToValidate="diarietb" ErrorMessage="Fält krävs" SetFocusOnError="True"></asp:RequiredFieldValidator>
             <asp:TextBox ID="diarietb" runat="server" class="form-control" tag='input' ClientIDMode="Static"
                 onkeyup="tbchange()"></asp:TextBox>
         </div>
@@ -16,6 +18,8 @@
     <div class="form-group row">
         <asp:Label ID="Label2" runat="server" Text="Avtal börjar gälla" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
+            <asp:CompareValidator ID="CompareValidator1" runat="server" ErrorMessage="Använd formatet YYYY-MM-DD" 
+                Operator="DataTypeCheck" Type="Date" ControlToValidate="startdatetb"></asp:CompareValidator>
             <asp:TextBox ID="startdatetb" type="date" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
         </div>
     </div>
@@ -58,6 +62,9 @@
     <div class="form-group row">
         <asp:Label ID="Label7" runat="server" Text="Organisationsnummer" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
+            <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" 
+                ControlToValidate="orgnrtb" ErrorMessage="Använd formatet xxxxxx-xxxx" 
+                ValidationExpression="^[0-9]{6}-[0-9]{4}$"></asp:RegularExpressionValidator>
             <asp:TextBox ID="orgnrtb" runat="server" class="form-control" onchange="validOrgNr()"
                 ClientIDMode="Static" onkeyup="tbchange()"></asp:TextBox>
             <div class="text-danger" id="orgnrerror" style="display: none">
@@ -86,7 +93,7 @@
     <div class="form-group row">
         <asp:Label ID="Label11" runat="server" Text="Avtalstecknare" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:DropDownList ID="avtalstecknaredd" runat="server" OnSelectedIndexChanged="persondd_SelectedIndexChanged"
+            <asp:DropDownList ID="avtalstecknaredd" runat="server" OnSelectedIndexChanged="Dropdowns_SelectedIndexChanged"
                 AutoPostBack="True" ViewStateMode="Enabled">
             </asp:DropDownList>
         </div>
@@ -97,7 +104,7 @@
     <div class="form-group row">
         <asp:Label ID="Label12" runat="server" Text="Avtalskontakt" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:DropDownList ID="kontaktdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="kontaktdd_SelectedIndexChanged">
+            <asp:DropDownList ID="kontaktdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dropdowns_SelectedIndexChanged">
             </asp:DropDownList>
         </div>
         <%--<div class="col-sm-8">
@@ -107,7 +114,7 @@
     <div class="form-group row">
         <asp:Label ID="Label13" runat="server" Text="Upphandlat av" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:DropDownList ID="upphandlatdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="upphandlatdd_SelectedIndexChanged">
+            <asp:DropDownList ID="upphandlatdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dropdowns_SelectedIndexChanged">
             </asp:DropDownList>
         </div>
     </div>
@@ -115,7 +122,7 @@
     <div class="form-group row">
         <asp:Label ID="Label16" runat="server" Text="Ansvarig SBK" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:DropDownList ID="ansvarig_sbkdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="upphandlatdd_SelectedIndexChanged">
+            <asp:DropDownList ID="ansvarig_sbkdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dropdowns_SelectedIndexChanged">
             </asp:DropDownList>
         </div>
     </div>
@@ -123,7 +130,7 @@
     <div class="form-group row">
         <asp:Label ID="Label17" runat="server" Text="Datakontakt" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:DropDownList ID="datakontaktdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="upphandlatdd_SelectedIndexChanged">
+            <asp:DropDownList ID="datakontaktdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dropdowns_SelectedIndexChanged">
             </asp:DropDownList>
         </div>
     </div>
@@ -155,8 +162,9 @@
     <%--<div class="form-group row">--%>
 
 
-    <asp:Button ID="submitbtn" runat="server" Text="Skicka" OnClick="Button1_Click" class="btn btn-primary" />
-        </div>
+    <asp:Button ID="submitbtn" runat="server" Text="Skicka" class="btn btn-primary" 
+        onclick="submitbtn_Click" ClientIDMode="Static" />
+       <%-- </div>--%>
     </form>
     <asp:Label ID="debugl" runat="server" Text="debug"></asp:Label>
     <asp:Label ID="debugl2" runat="server" Text="debug"></asp:Label>

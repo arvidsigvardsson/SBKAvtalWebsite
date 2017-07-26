@@ -9,18 +9,27 @@
     <div class="form-group row">
         <asp:Label ID="Label1" runat="server" Text="Diarienummer" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" 
-                ControlToValidate="diarietb" ErrorMessage="Fält krävs" SetFocusOnError="True"></asp:RequiredFieldValidator>
+            
             <asp:TextBox ID="diarietb" runat="server" class="form-control" tag='input' ClientIDMode="Static"
                 onkeyup="tbchange()"></asp:TextBox>
+
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" 
+                ControlToValidate="diarietb" ErrorMessage="Fält krävs" 
+                SetFocusOnError="True" ForeColor="#FF3300"></asp:RequiredFieldValidator>
         </div>
     </div>
     <div class="form-group row">
         <asp:Label ID="Label2" runat="server" Text="Avtal börjar gälla" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:CompareValidator ID="CompareValidator1" runat="server" ErrorMessage="Använd formatet YYYY-MM-DD" 
-                Operator="DataTypeCheck" Type="Date" ControlToValidate="startdatetb"></asp:CompareValidator>
+            
             <asp:TextBox ID="startdatetb" type="date" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+
+            <asp:CompareValidator ID="CompareValidator1" runat="server" ErrorMessage="Använd formatet YYYY-MM-DD" 
+                Operator="DataTypeCheck" Type="Date" ControlToValidate="startdatetb" 
+                ForeColor="#FF3300"></asp:CompareValidator>
+
+            <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" 
+                ErrorMessage="Fält krävs" ControlToValidate="startdatetb" ForeColor="#FF3300"></asp:RequiredFieldValidator>
         </div>
     </div>
 
@@ -29,6 +38,14 @@
         <asp:Label ID="Label3" runat="server" Text="Avtal upphör gälla" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
             <asp:TextBox ID="enddate" type="date" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+
+             <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" 
+                ErrorMessage="Fält krävs" ControlToValidate="enddate" ForeColor="#FF3300"></asp:RequiredFieldValidator>
+
+             <asp:CompareValidator ID="CompareValidator2" runat="server" ErrorMessage="Använd formatet YYYY-MM-DD" 
+                Operator="DataTypeCheck" Type="Date" ControlToValidate="enddate" 
+                ForeColor="#FF3300"></asp:CompareValidator>
+
         </div>
     </div>
 
@@ -62,13 +79,22 @@
     <div class="form-group row">
         <asp:Label ID="Label7" runat="server" Text="Organisationsnummer" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" 
+
+            
+
+           <%-- <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" 
                 ControlToValidate="orgnrtb" ErrorMessage="Använd formatet xxxxxx-xxxx" 
-                ValidationExpression="^[0-9]{6}-[0-9]{4}$"></asp:RegularExpressionValidator>
-            <asp:TextBox ID="orgnrtb" runat="server" class="form-control" onchange="validOrgNr()"
-                ClientIDMode="Static" onkeyup="tbchange()"></asp:TextBox>
-            <div class="text-danger" id="orgnrerror" style="display: none">
-                fel form</div>
+                ValidationExpression="^[0-9]{6}-[0-9]{4}$" ForeColor="#FF3300"></asp:RegularExpressionValidator>--%>
+            <asp:TextBox ID="orgnrtb" runat="server" class="form-control"
+                ClientIDMode="Static" onkeyup="tbchange()" CausesValidation="True"></asp:TextBox>
+
+                <asp:CustomValidator ID="OrgNummerValidator" runat="server" 
+                ErrorMessage="CustomValidator" 
+                onservervalidate="OrgNummerValidator_ServerValidate" 
+                ControlToValidate="orgnrtb" ForeColor="#FF3300" ValidateEmptyText="True"></asp:CustomValidator>
+
+            <%--<div class="text-danger" id="orgnrerror" style="display: none">
+                fel form</div>--%>
         </div>
     </div>
     <div class="form-group row">

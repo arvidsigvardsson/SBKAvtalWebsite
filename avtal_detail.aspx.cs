@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Configuration;
 using Npgsql;
+using System.Text.RegularExpressions;
 
 
 public partial class avtal_detail : System.Web.UI.Page
@@ -62,6 +63,7 @@ public partial class avtal_detail : System.Web.UI.Page
 
         // sparar i sessionen
         Session.Add("persons", persons);
+        Session.Add("innehallslist", innehallslist);
 
         for (int i = 0; i < persons.Count; i++)
         {
@@ -277,7 +279,10 @@ public partial class avtal_detail : System.Web.UI.Page
     protected void submitbtn_Click(object sender, EventArgs e)
     {
         // debugl.Text = "submitknapp";
-
+        if (!Page.IsValid)
+        {
+            return;
+        }
         if (submitbtn.Text == "Spara nytt")
         {
             SetSubmitButtonAppearance(SubmitButtonState.Sparat);
@@ -327,6 +332,8 @@ public partial class avtal_detail : System.Web.UI.Page
 
                 cmd.ExecuteNonQuery();
             }
+
+            // rensa maptabellen med avtalsinnehåll för givet avtal
         }
     }
 
@@ -335,7 +342,7 @@ public partial class avtal_detail : System.Web.UI.Page
         debugl.Text = "SaveNew metoden";
 
         Avtalsmodel avtal = GetFormInputs();
-
+        int avtalId = -1;
 
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
         using (var conn = new NpgsqlConnection(connstr))
@@ -362,10 +369,50 @@ public partial class avtal_detail : System.Web.UI.Page
                 cmd.Parameters.AddWithValue("ansvarig_sbk", avtal.ansvarig_sbk);
                 cmd.Parameters.AddWithValue("datakontakt", avtal.datakontakt);
 
-                cmd.ExecuteNonQuery();
+                //cmd.ExecuteNonQuery();
+                var reader = cmd.ExecuteReader();
+                
+                while(reader.Read())
+                {
+                    avtalId = reader.GetInt32(0);
+                }
             }
         }
 
+        using (var conn = new NpgsqlConnection(connstr))
+	    {
+            conn.Open();
+	
+
+            // lägger till i innehållmaptable
+            foreach (var innehallId in GetCheckedInnehall())
+            {
+                var innehallsquery = "insert into sbk_avtal.map_avtal_innehall(avtal_id, avtalsinnehall_id) values(@avtal_id, @avtalsinnehall_id);";
+                using (var cmd = new NpgsqlCommand(innehallsquery, conn))
+                {
+                    cmd.Parameters.AddWithValue("avtal_id", avtalId);
+                    cmd.Parameters.AddWithValue("avtalsinnehall_id", innehallId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            
+        }
+
+    }
+
+    private List<int> GetCheckedInnehall()
+    {
+        var lst = (List<Innehall>)Session["innehallslist"];
+        return innehallcbl.Items.
+            Cast<ListItem>().
+            Where(x => x.Selected).
+            Select(x => x.Value).
+            Select(x => lst.
+                Where(y => y.beskrivning == x).
+                First()).
+            Select(x => x.id).
+            ToList();
     }
 
     private Avtalsmodel GetFormInputs()
@@ -377,7 +424,7 @@ public partial class avtal_detail : System.Web.UI.Page
             enddate = DateTime.Parse(enddate.Text),
             status = statusdd.SelectedValue,
             motpartstyp = motpartsdd.SelectedValue,
-            sbkid = int.Parse(sbkidtb.Text),
+            sbkid = sbkidtb.Text != "" ? int.Parse(sbkidtb.Text) : -1,
             orgnummer = orgnrtb.Text,
             enligtAvtal = enlavttb.Text,
             interntAlias = intidtb.Text,
@@ -438,4 +485,44 @@ public partial class avtal_detail : System.Web.UI.Page
     }
 
     private enum SubmitButtonState { SparaNytt, Sparat, Uppdatera, Uppdaterat }
+
+    protected void OrgNummerValidator_ServerValidate(object source, ServerValidateEventArgs args)
+    {
+        debugl2.Text = "Validerar...";
+        var regex = new Regex("^[0-9]{6}-[0-9]{4}$");
+        var orgnr = args.Value;
+
+        if (regex.IsMatch(orgnr))
+        {
+            if (ValidOrgNummer(orgnr))
+            {
+                args.IsValid = true;
+            }
+            else
+            {
+                args.IsValid = false;
+                OrgNummerValidator.ErrorMessage = "Checksiffra matchar inte";
+            }
+        }
+        else
+        {
+            args.IsValid = false;
+            OrgNummerValidator.ErrorMessage = "Använd formatet XXXXXX-XXXX";
+        }
+    }
+
+    private bool ValidOrgNummer(string orgnummer)
+    {
+        var multipliers = new List<int>{ 2, 1, 2, 1, 2, 1, 2, 1, 2, 1 };
+        var clean = orgnummer.Replace("-", "");
+        var digits = clean.ToCharArray().Select(x => (int)Char.GetNumericValue(x));
+        var sum = digits.Zip(multipliers, (a, b) => a * b).Select(x => x / 10 + x % 10).Sum();
+        return sum % 10 == 0;
+    }
+
+    private int LuhnChecksum(string orgnummer)
+    {
+        return 0;
+    }
+
 }

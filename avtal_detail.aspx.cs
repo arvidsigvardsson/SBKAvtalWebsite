@@ -301,9 +301,22 @@ public partial class avtal_detail : System.Web.UI.Page
         debugl.Text = "Update metoden";
 
         var avtal = GetFormInputs();
-        var id = Request.Params["id"];
+        var id = int.Parse(Request.Params["id"]);
 
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
+
+        using (var conn = new NpgsqlConnection(connstr))
+        {
+            // rensa maptabellen med avtalsinnehåll för givet avtal
+            var deletequery = "delete from sbk_avtal.map_avtal_innehall where avtal_id=@id;";
+            conn.Open();
+            using (var cmd = new NpgsqlCommand(deletequery, conn))
+            {
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        
         using (var conn = new NpgsqlConnection(connstr))
         {
             conn.Open();
@@ -332,8 +345,33 @@ public partial class avtal_detail : System.Web.UI.Page
 
                 cmd.ExecuteNonQuery();
             }
+        
 
-            // rensa maptabellen med avtalsinnehåll för givet avtal
+        //using (var conn = new NpgsqlConnection(connstr))
+        //{
+        //    // rensa maptabellen med avtalsinnehåll för givet avtal
+        //    var deletequery = "delete from sbk_avtal.map_avtal_innehall where id=@id;";
+        //    using (var cmd = new NpgsqlCommand(deletequery, conn))
+        //    {
+        //        cmd.Parameters.AddWithValue("id", id);
+        //        cmd.ExecuteNonQuery();
+        //    }
+        //}
+
+            // lägg till nytt avtalsinnehåll
+            // lägger till i innehållmaptable
+            foreach (var innehallId in GetCheckedInnehall())
+            {
+                var innehallsquery = "insert into sbk_avtal.map_avtal_innehall(avtal_id, avtalsinnehall_id) values(@avtal_id, @avtalsinnehall_id);";
+                using (var cmd = new NpgsqlCommand(innehallsquery, conn))
+                {
+                    cmd.Parameters.AddWithValue("avtal_id", id);
+                    cmd.Parameters.AddWithValue("avtalsinnehall_id", innehallId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
         }
     }
 
@@ -348,7 +386,7 @@ public partial class avtal_detail : System.Web.UI.Page
         using (var conn = new NpgsqlConnection(connstr))
         {
             conn.Open();
-            var query = "insert into sbk_avtal.avtal(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt) values(@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt);";
+            var query = "insert into sbk_avtal.avtal(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt, scan_url) values(@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt, @scan_url) returning id;";
             using (var cmd = new NpgsqlCommand(query, conn))
             {
                 cmd.Parameters.AddWithValue("diarienummer", avtal.diarienummer);
@@ -363,11 +401,12 @@ public partial class avtal_detail : System.Web.UI.Page
                 cmd.Parameters.AddWithValue("kommentar", avtal.kommentar);
                 cmd.Parameters.AddWithValue("ansvarig_avd", avtal.ansvarig_avdelning);
                 cmd.Parameters.AddWithValue("ansvarig_enhet", avtal.ansvarig_enhet);
-                cmd.Parameters.AddWithValue("avtalstecknare", avtal.avtalstecknare);
-                cmd.Parameters.AddWithValue("avtalskontakt", avtal.avtalskontakt);
-                cmd.Parameters.AddWithValue("upphandlat_av", avtal.upphandlat_av);
-                cmd.Parameters.AddWithValue("ansvarig_sbk", avtal.ansvarig_sbk);
-                cmd.Parameters.AddWithValue("datakontakt", avtal.datakontakt);
+                cmd.Parameters.AddWithValue("avtalstecknare", (Object)avtal.avtalstecknare ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("avtalskontakt", (Object)avtal.avtalskontakt ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("upphandlat_av", (Object)avtal.upphandlat_av ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("ansvarig_sbk", (Object)avtal.ansvarig_sbk ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("datakontakt", (Object)avtal.datakontakt ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("scan_url", "");
 
                 //cmd.ExecuteNonQuery();
                 var reader = cmd.ExecuteReader();
@@ -434,11 +473,47 @@ public partial class avtal_detail : System.Web.UI.Page
         };
 
         List<Person> personer = (List<Person>)Session["persons"];
-        avtal.avtalstecknare = personer.Where(x => avtalstecknaredd.SelectedIndex == x.dropdownindex).First().id;
-        avtal.avtalskontakt = personer.Where(x => kontaktdd.SelectedIndex == x.dropdownindex).First().id;
-        avtal.upphandlat_av = personer.Where(x => upphandlatdd.SelectedIndex == x.dropdownindex).First().id;
-        avtal.ansvarig_sbk = personer.Where(x => ansvarig_sbkdd.SelectedIndex == x.dropdownindex).First().id;
-        avtal.datakontakt = personer.Where(x => datakontaktdd.SelectedIndex == x.dropdownindex).First().id;
+        try
+        {
+            avtal.avtalstecknare = personer.Where(x => avtalstecknaredd.SelectedIndex == x.dropdownindex).FirstOrDefault().id;
+        }
+        catch (Exception)
+        {
+            avtal.avtalstecknare = null;
+        }
+        try
+        {
+            avtal.avtalskontakt = personer.Where(x => kontaktdd.SelectedIndex == x.dropdownindex).FirstOrDefault().id;
+        }
+        catch (Exception)
+        {
+            avtal.avtalskontakt = null;
+        }
+        try
+        {
+            avtal.upphandlat_av = personer.Where(x => upphandlatdd.SelectedIndex == x.dropdownindex).FirstOrDefault().id;
+        }
+        catch (Exception)
+        {
+            avtal.upphandlat_av = null;
+        }
+        try
+        {
+            avtal.ansvarig_sbk = personer.Where(x => ansvarig_sbkdd.SelectedIndex == x.dropdownindex).FirstOrDefault().id;
+        }
+        catch (Exception)
+        {
+            avtal.ansvarig_sbk = null;
+        }
+        try
+        {
+            avtal.datakontakt = personer.Where(x => datakontaktdd.SelectedIndex == x.dropdownindex).FirstOrDefault().id;
+        }
+        catch (Exception)
+        {
+            avtal.datakontakt = null;
+        }
+       
         return avtal;
     }
 

@@ -9,7 +9,7 @@
 
     <ul>
         <li>
-            <a href="./avtalsgrid.aspx">Alla avtal</a>
+            <a href="./avtal.aspx">Alla avtal</a>
         </li>
         <li>
             <a href="./avtal_detail.aspx?nytt_avtal=true">Lägg till nytt avtal</a>

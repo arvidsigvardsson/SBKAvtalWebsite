@@ -185,8 +185,117 @@
         </div>
     </div>
     
-    <%--<div class="form-group row">--%>
+    <div class="form-group row">
+        <asp:Label ID="Label18" runat="server" Text="Sökväg till avtal" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="pathtoavtaltb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-sm-2"></div>
+        <h3 class="col-sm-6 h3">Ekonomi</h3>
+    </div>
 
+    <div class="form-group row">
+        <asp:Label ID="Label19" runat="server" Text="Konto" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="kontotb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <asp:Label ID="Label20" runat="server" Text="Kstl" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="kstltb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <asp:Label ID="Label21" runat="server" Text="Vht" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="vhttb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <asp:Label ID="Label22" runat="server" Text="MTP" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="mtptb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <asp:Label ID="Label23" runat="server" Text="Aktivitet" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="aktivitettb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <asp:Label ID="Label24" runat="server" Text="Objekt" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="objekttb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-2"></div>
+        <h3 class="col-sm-6 h3">Leveranser</h3>
+    </div>
+
+     <div class="form-group row">
+        <asp:Label ID="Label27" runat="server" Text="Manuella leveransdatum" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:Table ID="manuelllevtable" runat="server">
+            <asp:TableRow>
+              <asp:TableCell>
+                  <asp:TextBox ID="TextBox1" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+              </asp:TableCell>
+            </asp:TableRow>
+            </asp:Table>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-2"></div>
+        <asp:LinkButton ID="nyleveranslb" runat="server" class="col-sm-6" 
+            onclick="nyleveranslb_Click">+ Lägg till nytt datum</asp:LinkButton>
+    </div>
+
+    <div class="form-group row">
+        <asp:Label ID="Label26" runat="server" Text="Aktivera leveranser" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:CheckBox ID="leveranscb" runat="server" AutoPostBack="True" 
+                oncheckedchanged="leveranscb_CheckedChanged" />
+        </div>
+    </div>
+
+    <div ID="leveransdiv" visible="false" runat="server">
+    <div class="form-group row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-6">
+            <asp:RadioButtonList ID="leveransrbl" runat="server" 
+                RepeatDirection="Horizontal" RepeatLayout="Flow" CellPadding="3" 
+                CellSpacing="3" RepeatColumns="3" 
+                onselectedindexchanged="RadioButtonList1_SelectedIndexChanged" 
+                AutoPostBack="True">
+            <asp:ListItem class="radio-inline">Ett datum</asp:ListItem>
+            <asp:ListItem class="radio-inline">Visst datum varje månad</asp:ListItem>
+            </asp:RadioButtonList>
+        </div>
+    </div>
+
+    <div ID="ettdatumdiv" visible="false" runat="server" class="form-group row">
+        <div class="col-sm-2"></div>
+        <asp:Label ID="Label25" runat="server" Text="Ett datum" class="col-sm-6"></asp:Label>
+    </div>
+
+    <div ID="datumvarjemanaddiv" visible="false" runat="server" class="form-group row">
+        <div class="col-sm-2"></div>
+        <h3 class="col-sm-6 h3">Visst datum varje månad</h3>
+    </div>
+    </div>
 
     <asp:Button ID="submitbtn" runat="server" Text="Skicka" class="btn btn-primary" 
         onclick="submitbtn_Click" ClientIDMode="Static" />

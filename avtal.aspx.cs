@@ -18,7 +18,7 @@ public partial class avtalsgrid : System.Web.UI.Page
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
         using (var conn = new NpgsqlConnection(connstr))
         {
-            var sqlquery = "select avtal.id, enligt_avtal, diarienummer, startdate, enddate, data.first_name as \"datakontakt förnamn\", data.last_name as \"datakontakt efternamn\", kontakt.last_name as \"Avtalskontakt efternamn\", orgnummer from sbk_avtal.avtal left join sbk_avtal.person data on data.id=sbk_avtal.avtal.datakontakt left join sbk_avtal.person kontakt on kontakt.id=sbk_avtal.avtal.avtalskontakt;";
+            var sqlquery = "select avtal.id, enligt_avtal, diarienummer, startdate, enddate, ansvarigsbk.first_name as \"Ansvarig SBK - Förnamn\", ansvarigsbk.last_name as \"Ansvarig SBK - efternamn\", ansvarigsbk.epost as \"Ansvarig SBK - epost\", data.first_name as \"datakontakt förnamn\", data.last_name as \"datakontakt efternamn\", data.epost as \"datakontakt epost\", kontakt.last_name as \"Avtalskontakt efternamn\", orgnummer from sbk_avtal.avtal left join sbk_avtal.person data on data.id=sbk_avtal.avtal.datakontakt left join sbk_avtal.person kontakt on kontakt.id=sbk_avtal.avtal.avtalskontakt left join sbk_avtal.person ansvarigsbk on ansvarigsbk.id=sbk_avtal.avtal.ansvarig_sbk;";
             using (var da = new NpgsqlDataAdapter(sqlquery, conn))
             {
                 da.Fill(ds);

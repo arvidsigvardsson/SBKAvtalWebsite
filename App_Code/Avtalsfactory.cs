@@ -176,7 +176,13 @@ public static class Avtalsfactory
                 upphandlat_av = upphandlat_av,
                 ansvarig_avdelning = reader.GetString(15),
                 ansvarig_enhet = reader.GetString(16),
-                datakontakt = datakontakt
+                datakontakt = datakontakt,
+                konto = reader.GetString(19),
+                kstl = reader.GetString(20),
+                vht = reader.GetString(21),
+                mtp = reader.GetString(22),
+                aktivitet = reader.GetString(23),
+                objekt = reader.GetString(24),
             });
         }
 

@@ -27,4 +27,10 @@ public class Avtalsmodel
     public string ansvarig_enhet { get; set; }
     public long? ansvarig_sbk { get; set; }
     public long? datakontakt { get; set; }
+    public string konto { get; set; }
+    public string kstl { get; set; }
+    public string vht { get; set; }
+    public string mtp { get; set; }
+    public string aktivitet { get; set; }
+    public string objekt { get; set; }
 }

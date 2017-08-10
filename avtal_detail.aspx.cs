@@ -123,7 +123,7 @@ public partial class avtal_detail : System.Web.UI.Page
                 conn.Open();
 
                 // avtal
-                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar,  avtalstecknare, avtalskontakt, ansvarig_sbk, ansvarig_avd, ansvarig_enhet, upphandlat_av, datakontakt from sbk_avtal.avtal where id = @p1;";
+                var sqlquery = "select id, diarienummer, startdate, enddate, status, motpartstyp, SBKavtalsid, scan_url, orgnummer, enligt_avtal, internt_alias, kommentar,  avtalstecknare, avtalskontakt, ansvarig_sbk, ansvarig_avd, ansvarig_enhet, upphandlat_av, datakontakt, konto, kstl, vht, mtp, aktivitet, objekt from sbk_avtal.avtal where id = @p1;";
                 using (var cmd = new NpgsqlCommand(sqlquery, conn))
                 {
                     // cmd.Connection = conn;
@@ -169,6 +169,16 @@ public partial class avtal_detail : System.Web.UI.Page
         kommentartb.Text = avtal.kommentar;
         ansvavdtb.Text = avtal.ansvarig_avdelning;
         ansvenhtb.Text = avtal.ansvarig_enhet;
+
+        pathtoavtaltb.Text = avtal.scan_url;
+
+        // ekonomi
+        kontotb.Text = avtal.konto;
+        kstltb.Text = avtal.kstl;
+        vhttb.Text = avtal.vht;
+        mtptb.Text = avtal.mtp;
+        aktivitettb.Text = avtal.aktivitet;
+        objekttb.Text = avtal.objekt;
 
         //dropdowns
         Person avtalstecknare = persons.Where(x => x.id == avtal.avtalstecknare).FirstOrDefault();
@@ -320,7 +330,7 @@ public partial class avtal_detail : System.Web.UI.Page
         using (var conn = new NpgsqlConnection(connstr))
         {
             conn.Open();
-            var query = "update sbk_avtal.avtal set(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt) = (@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt) where id = @id;";
+            var query = "update sbk_avtal.avtal set(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt, scan_url, konto, kstl, vht, mtp, aktivitet, objekt) = (@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt, @scan_url, @konto, @kstl, @vht, @mtp, @aktivitet, @objekt) where id = @id;";
             using (var cmd = new NpgsqlCommand(query, conn))
             {
                 cmd.Parameters.AddWithValue("diarienummer", avtal.diarienummer);
@@ -342,6 +352,14 @@ public partial class avtal_detail : System.Web.UI.Page
                 cmd.Parameters.AddWithValue("datakontakt", avtal.datakontakt);
 
                 cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.AddWithValue("scan_url", avtal.scan_url);
+
+                cmd.Parameters.AddWithValue("konto", avtal.konto);
+                cmd.Parameters.AddWithValue("kstl", avtal.kstl);
+                cmd.Parameters.AddWithValue("vht", avtal.vht);
+                cmd.Parameters.AddWithValue("mtp", avtal.mtp);
+                cmd.Parameters.AddWithValue("aktivitet", avtal.aktivitet);
+                cmd.Parameters.AddWithValue("objekt", avtal.objekt);
 
                 cmd.ExecuteNonQuery();
             }
@@ -386,7 +404,7 @@ public partial class avtal_detail : System.Web.UI.Page
         using (var conn = new NpgsqlConnection(connstr))
         {
             conn.Open();
-            var query = "insert into sbk_avtal.avtal(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt, scan_url) values(@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt, @scan_url) returning id;";
+            var query = "insert into sbk_avtal.avtal(diarienummer, startdate, enddate, status, motpartstyp, sbkavtalsid, orgnummer, enligt_avtal, internt_alias, kommentar, ansvarig_avd, ansvarig_enhet, avtalstecknare, avtalskontakt, upphandlat_av, ansvarig_sbk, datakontakt, scan_url, konto, kstl, vht, mtp, aktivitet, objekt) values(@diarienummer, @startdate, @enddate, @status, @motpartstyp, @sbkavtalsid, @orgnummer, @enligt_avtal, @internt_alias, @kommentar, @ansvarig_avd, @ansvarig_enhet, @avtalstecknare, @avtalskontakt, @upphandlat_av, @ansvarig_sbk, @datakontakt, @scan_url, @konto, @kstl, @vht, @mtp, @aktivitet, @objekt) returning id;";
             using (var cmd = new NpgsqlCommand(query, conn))
             {
                 cmd.Parameters.AddWithValue("diarienummer", avtal.diarienummer);
@@ -406,7 +424,14 @@ public partial class avtal_detail : System.Web.UI.Page
                 cmd.Parameters.AddWithValue("upphandlat_av", (Object)avtal.upphandlat_av ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("ansvarig_sbk", (Object)avtal.ansvarig_sbk ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("datakontakt", (Object)avtal.datakontakt ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("scan_url", "");
+                cmd.Parameters.AddWithValue("scan_url", avtal.scan_url);
+                
+                cmd.Parameters.AddWithValue("konto", avtal.konto);
+                cmd.Parameters.AddWithValue("kstl", avtal.kstl);
+                cmd.Parameters.AddWithValue("vht", avtal.vht);
+                cmd.Parameters.AddWithValue("mtp", avtal.mtp);
+                cmd.Parameters.AddWithValue("aktivitet", avtal.aktivitet);
+                cmd.Parameters.AddWithValue("objekt", avtal.objekt);
 
                 //cmd.ExecuteNonQuery();
                 var reader = cmd.ExecuteReader();
@@ -470,6 +495,13 @@ public partial class avtal_detail : System.Web.UI.Page
             kommentar = kommentartb.Text,
             ansvarig_avdelning = ansvavdtb.Text,
             ansvarig_enhet = ansvenhtb.Text,
+            scan_url = pathtoavtaltb.Text,
+            konto = kontotb.Text,
+            kstl = kstltb.Text,
+            vht = vhttb.Text,
+            mtp = mtptb.Text,
+            aktivitet = aktivitettb.Text,
+            objekt = objekttb.Text,
         };
 
         List<Person> personer = (List<Person>)Session["persons"];
@@ -600,4 +632,41 @@ public partial class avtal_detail : System.Web.UI.Page
         return 0;
     }
 
+    protected void RadioButtonList1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (leveransrbl.SelectedIndex == 0)
+        {
+            ettdatumdiv.Visible = true;
+            datumvarjemanaddiv.Visible = false;
+        }
+        else
+        {
+            ettdatumdiv.Visible = false;
+            datumvarjemanaddiv.Visible = true;
+        }
+    }
+
+    protected void leveranscb_CheckedChanged(object sender, EventArgs e)
+    {
+        if (leveranscb.Checked == true)
+        {
+            leveransdiv.Visible = true;
+        }
+        else
+        {
+            leveransdiv.Visible = false;
+        }
+    }
+
+    protected void nyleveranslb_Click(object sender, EventArgs e)
+    {
+
+        var row = new TableRow();
+        var cell = new TableCell();
+        var tb = new TextBox();
+
+        cell.Controls.Add(tb);
+        row.Controls.Add(cell);
+        manuelllevtable.Rows.Add(row);
+    }
 }

@@ -21,7 +21,7 @@
             <a href="./faktura_detail.aspx?ny_adress=true">Lägg till en fakturaadress</a>    
         </li>
         <li>
-            <a href="./testepost.aspx">Testa epost</a>
+            <a href="./leveranser.aspx">Leveranser</a>
         </li>
         <%--<li>
             <a href="./avtalsgrid.aspx">Avtal som gridview</a>

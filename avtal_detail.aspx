@@ -244,9 +244,17 @@
         <h3 class="col-sm-6 h3">Leveranser</h3>
     </div>
 
-     <div class="form-group row">
-        <asp:Label ID="Label27" runat="server" Text="Manuella leveransdatum" class="control-label col-sm-2 text-right"></asp:Label>
+    <div class="form-group row">
+        <asp:Label ID="Label28" runat="server" Text="Manuella leveransdatum" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
+            <asp:TextBox ID="manuellevtb" runat="server" TextMode="MultiLine" Rows="10" onkeyup="tbchange()"></asp:TextBox>
+        </div>
+        
+    </div>
+
+     <%--<div class="form-group row">
+        <asp:Label ID="Label27" runat="server" Text="Manuella leveransdatum" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-1">
             <asp:Table ID="manuelllevtable" runat="server">
             <asp:TableRow>
               <asp:TableCell>
@@ -254,6 +262,9 @@
               </asp:TableCell>
             </asp:TableRow>
             </asp:Table>
+        </div>
+        <div class="col-sm-2">
+            <asp:LinkButton ID="LinkButton1" runat="server">LinkButton</asp:LinkButton>
         </div>
     </div>
 
@@ -295,7 +306,7 @@
         <div class="col-sm-2"></div>
         <h3 class="col-sm-6 h3">Visst datum varje månad</h3>
     </div>
-    </div>
+    </div>--%>
 
     <asp:Button ID="submitbtn" runat="server" Text="Skicka" class="btn btn-primary" 
         onclick="submitbtn_Click" ClientIDMode="Static" />

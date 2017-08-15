@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using System.Configuration;
 using Npgsql;
 using System.Text.RegularExpressions;
+using System.Text;
 
 
 public partial class avtal_detail : System.Web.UI.Page
@@ -29,6 +30,7 @@ public partial class avtal_detail : System.Web.UI.Page
         var avtal = new Avtalsmodel();
         var persons = new List<Person>();
         var innehallslist = new List<Innehall>();
+        var leveranslist = new List<DateTime>();
 
         // ta fram personer till rullister
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
@@ -152,6 +154,19 @@ public partial class avtal_detail : System.Web.UI.Page
                     }
                 }
 
+                // leveranser
+                var levquery = "select datum from sbk_avtal.leveranser where avtal_id=@avtal_id order by datum;";
+                using (var cmd = new NpgsqlCommand(levquery, conn))
+                {
+                    cmd.Parameters.AddWithValue("avtal_id", dbid);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            leveranslist.Add(reader.GetDateTime(0));
+                        }
+                    }
+                }
             }
         }
 
@@ -179,6 +194,14 @@ public partial class avtal_detail : System.Web.UI.Page
         mtptb.Text = avtal.mtp;
         aktivitettb.Text = avtal.aktivitet;
         objekttb.Text = avtal.objekt;
+
+        // leveranser
+        var levsb = new StringBuilder();
+        foreach (var date in leveranslist)
+        {
+            levsb.AppendLine(date.ToShortDateString());  //string.Format("{0:d}", date.ToString()));
+        }
+        manuellevtb.Text = levsb.ToString();
 
         //dropdowns
         Person avtalstecknare = persons.Where(x => x.id == avtal.avtalstecknare).FirstOrDefault();
@@ -311,6 +334,7 @@ public partial class avtal_detail : System.Web.UI.Page
         debugl.Text = "Update metoden";
 
         var avtal = GetFormInputs();
+        var leveranser = GetLeveransDates();
         var id = int.Parse(Request.Params["id"]);
 
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
@@ -323,6 +347,14 @@ public partial class avtal_detail : System.Web.UI.Page
             using (var cmd = new NpgsqlCommand(deletequery, conn))
             {
                 cmd.Parameters.AddWithValue("id", id);
+                cmd.ExecuteNonQuery();
+            }
+
+            // rensa leveranstabellen för givet avtal
+            var levdeletequery = "delete from sbk_avtal.leveranser where avtal_id=@avtal_id";
+            using (var cmd = new NpgsqlCommand(levdeletequery, conn))
+            {
+                cmd.Parameters.AddWithValue("avtal_id", id);
                 cmd.ExecuteNonQuery();
             }
         }
@@ -389,6 +421,19 @@ public partial class avtal_detail : System.Web.UI.Page
                     cmd.ExecuteNonQuery();
                 }
             }
+
+            // lägg till leveranser
+            foreach (var date in leveranser)
+            {
+                var insertlevquery = "insert into sbk_avtal.leveranser(datum, avtal_id) values(@datum, @avtal_id);";
+                using (var cmd = new NpgsqlCommand(insertlevquery, conn))
+                {
+                    cmd.Parameters.AddWithValue("datum", date);
+                    cmd.Parameters.AddWithValue("avtal_id", id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+       
 
         }
     }
@@ -462,6 +507,16 @@ public partial class avtal_detail : System.Web.UI.Page
             }
             
         }
+    }
+
+    private List<DateTime> GetLeveransDates()
+    {
+        var lst = manuellevtb.Text.Split('\n');
+        DateTime dt;
+        return lst.
+            Where(x => x != "").
+            // Where(x => DateTime.TryParse(x, out dt)).
+            Select(x => DateTime.Parse(x)).ToList();
 
     }
 
@@ -627,46 +682,46 @@ public partial class avtal_detail : System.Web.UI.Page
         return sum % 10 == 0;
     }
 
-    private int LuhnChecksum(string orgnummer)
-    {
-        return 0;
-    }
+    //private int LuhnChecksum(string orgnummer)
+    //{
+    //    return 0;
+    //}
 
-    protected void RadioButtonList1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (leveransrbl.SelectedIndex == 0)
-        {
-            ettdatumdiv.Visible = true;
-            datumvarjemanaddiv.Visible = false;
-        }
-        else
-        {
-            ettdatumdiv.Visible = false;
-            datumvarjemanaddiv.Visible = true;
-        }
-    }
+    //protected void RadioButtonList1_SelectedIndexChanged(object sender, EventArgs e)
+    //{
+    //    if (leveransrbl.SelectedIndex == 0)
+    //    {
+    //        ettdatumdiv.Visible = true;
+    //        datumvarjemanaddiv.Visible = false;
+    //    }
+    //    else
+    //    {
+    //        ettdatumdiv.Visible = false;
+    //        datumvarjemanaddiv.Visible = true;
+    //    }
+    //}
 
-    protected void leveranscb_CheckedChanged(object sender, EventArgs e)
-    {
-        if (leveranscb.Checked == true)
-        {
-            leveransdiv.Visible = true;
-        }
-        else
-        {
-            leveransdiv.Visible = false;
-        }
-    }
+    //protected void leveranscb_CheckedChanged(object sender, EventArgs e)
+    //{
+    //    if (leveranscb.Checked == true)
+    //    {
+    //        leveransdiv.Visible = true;
+    //    }
+    //    else
+    //    {
+    //        leveransdiv.Visible = false;
+    //    }
+    //}
 
-    protected void nyleveranslb_Click(object sender, EventArgs e)
-    {
+    //protected void nyleveranslb_Click(object sender, EventArgs e)
+    //{
 
-        var row = new TableRow();
-        var cell = new TableCell();
-        var tb = new TextBox();
+    //    var row = new TableRow();
+    //    var cell = new TableCell();
+    //    var tb = new TextBox();
 
-        cell.Controls.Add(tb);
-        row.Controls.Add(cell);
-        manuelllevtable.Rows.Add(row);
-    }
+    //    cell.Controls.Add(tb);
+    //    row.Controls.Add(cell);
+    //    manuelllevtable.Rows.Add(row);
+    //}
 }

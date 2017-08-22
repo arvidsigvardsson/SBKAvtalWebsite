@@ -33,4 +33,5 @@ public class Avtalsmodel
     public string mtp { get; set; }
     public string aktivitet { get; set; }
     public string objekt { get; set; }
+    public string avtalstyp { get; set; }
 }

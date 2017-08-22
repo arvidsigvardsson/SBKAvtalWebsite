@@ -6,6 +6,20 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="Server">
     <form class="form-horizontal" method="post" action="avtal_detail.aspx">
+    
+     <div class="form-group row">
+        <asp:Label ID="Label25" runat="server" Text="Typ av avtal" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:DropDownList ID="avtalstyptb" runat="server" onchange="tbchange()" 
+                AutoPostBack="True" onselectedindexchanged="avtalstyptb_SelectedIndexChanged">
+                <asp:ListItem>Kundavtal</asp:ListItem>
+                <asp:ListItem>Leverantörsavtal</asp:ListItem>
+                <asp:ListItem>Samarbetsavtal</asp:ListItem>
+                <asp:ListItem>Övrigt</asp:ListItem>
+            </asp:DropDownList>
+        </div>
+    </div>
+    
     <div class="form-group row">
         <asp:Label ID="Label1" runat="server" Text="Diarienummer" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
@@ -153,13 +167,7 @@
         </div>
     </div>
 
-    <div class="form-group row">
-        <asp:Label ID="Label17" runat="server" Text="Datakontakt" class="control-label col-sm-2 text-right"></asp:Label>
-        <div class="col-sm-6">
-            <asp:DropDownList ID="datakontaktdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dropdowns_SelectedIndexChanged">
-            </asp:DropDownList>
-        </div>
-    </div>
+   
 
     <div class="form-group row">
         <asp:Label ID="Label14" runat="server" Text="Ansvarig avdelning" class="control-label col-sm-2 text-right"></asp:Label>
@@ -192,6 +200,16 @@
         </div>
     </div>
     
+
+    <div id="kundavtalscontrols" runat="server">
+     <div class="form-group row">
+        <asp:Label ID="Label17" runat="server" Text="Datakontakt" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:DropDownList ID="datakontaktdd" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dropdowns_SelectedIndexChanged">
+            </asp:DropDownList>
+        </div>
+    </div>
+
     <div class="form-group row">
         <div class="col-sm-2"></div>
         <h3 class="col-sm-6 h3">Ekonomi</h3>
@@ -251,62 +269,7 @@
         </div>
         
     </div>
-
-     <%--<div class="form-group row">
-        <asp:Label ID="Label27" runat="server" Text="Manuella leveransdatum" class="control-label col-sm-2 text-right"></asp:Label>
-        <div class="col-sm-1">
-            <asp:Table ID="manuelllevtable" runat="server">
-            <asp:TableRow>
-              <asp:TableCell>
-                  <asp:TextBox ID="TextBox1" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
-              </asp:TableCell>
-            </asp:TableRow>
-            </asp:Table>
-        </div>
-        <div class="col-sm-2">
-            <asp:LinkButton ID="LinkButton1" runat="server">LinkButton</asp:LinkButton>
-        </div>
     </div>
-
-    <div class="form-group row">
-        <div class="col-sm-2"></div>
-        <asp:LinkButton ID="nyleveranslb" runat="server" class="col-sm-6" 
-            onclick="nyleveranslb_Click">+ Lägg till nytt datum</asp:LinkButton>
-    </div>
-
-    <div class="form-group row">
-        <asp:Label ID="Label26" runat="server" Text="Aktivera leveranser" class="control-label col-sm-2 text-right"></asp:Label>
-        <div class="col-sm-6">
-            <asp:CheckBox ID="leveranscb" runat="server" AutoPostBack="True" 
-                oncheckedchanged="leveranscb_CheckedChanged" />
-        </div>
-    </div>
-
-    <div ID="leveransdiv" visible="false" runat="server">
-    <div class="form-group row">
-        <div class="col-sm-2"></div>
-        <div class="col-sm-6">
-            <asp:RadioButtonList ID="leveransrbl" runat="server" 
-                RepeatDirection="Horizontal" RepeatLayout="Flow" CellPadding="3" 
-                CellSpacing="3" RepeatColumns="3" 
-                onselectedindexchanged="RadioButtonList1_SelectedIndexChanged" 
-                AutoPostBack="True">
-            <asp:ListItem class="radio-inline">Ett datum</asp:ListItem>
-            <asp:ListItem class="radio-inline">Visst datum varje månad</asp:ListItem>
-            </asp:RadioButtonList>
-        </div>
-    </div>
-
-    <div ID="ettdatumdiv" visible="false" runat="server" class="form-group row">
-        <div class="col-sm-2"></div>
-        <asp:Label ID="Label25" runat="server" Text="Ett datum" class="col-sm-6"></asp:Label>
-    </div>
-
-    <div ID="datumvarjemanaddiv" visible="false" runat="server" class="form-group row">
-        <div class="col-sm-2"></div>
-        <h3 class="col-sm-6 h3">Visst datum varje månad</h3>
-    </div>
-    </div>--%>
 
     <asp:Button ID="submitbtn" runat="server" Text="Skicka" class="btn btn-primary" 
         onclick="submitbtn_Click" ClientIDMode="Static" />

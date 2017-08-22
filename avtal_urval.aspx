@@ -5,7 +5,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
     <asp:Table ID="Avdelningstable" runat="server">
     <asp:TableHeaderRow>
-    <asp:TableHeaderCell 
+    <asp:TableHeaderCell></asp:TableHeaderCell>
     </asp:TableHeaderRow>
     <asp:TableRow>
     <asp:TableCell Text="En sak"></asp:TableCell>

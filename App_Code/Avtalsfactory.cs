@@ -183,6 +183,7 @@ public static class Avtalsfactory
                 mtp = reader.GetString(22),
                 aktivitet = reader.GetString(23),
                 objekt = reader.GetString(24),
+                avtalstyp = reader.GetString(25),
             });
         }
 

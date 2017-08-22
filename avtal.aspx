@@ -15,11 +15,20 @@
 
         <Columns>
             <%--<asp:BoundField DataField="ID" HeaderText="ID" />--%>
-            <asp:BoundField DataField="enligt_avtal" HeaderText="Enligt avtal" SortExpression="enligt_avtal" />
             <asp:BoundField DataField="diarienummer" HeaderText="Diarienummer" SortExpression="diarienummer" />
-            <asp:BoundField DataField="orgnummer" HeaderText="Organisationsnummer" SortExpression="orgnummer" />
             <asp:BoundField DataField="startdate" HeaderText="Börjar gälla" SortExpression="startdate" dataformatstring="{0:d}"/>
             <asp:BoundField DataField="enddate" HeaderText="Upphör" SortExpression="enddate" dataformatstring="{0:d}"/>
+            <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
+            <asp:BoundField DataField="motpartstyp" HeaderText="Motpartstyp" SortExpression="motpartstyp" />            
+            <asp:BoundField DataField="enligt_avtal" HeaderText="Enligt avtal" SortExpression="enligt_avtal" />
+            <asp:BoundField DataField="avtalskontakt" HeaderText="Avtalskontakt" SortExpression="avtalskontakt" />
+            <asp:BoundField DataField="ansvarig_sbk" HeaderText="Ansvarig SBK" SortExpression="ansvarig_sbk" />
+            <asp:BoundField DataField="ansvarig_avd" HeaderText="Ansvarig avdelning" SortExpression="ansvarig_avd" />
+
+
+            <asp:BoundField DataField="orgnummer" HeaderText="Organisationsnummer" SortExpression="orgnummer" />
+
+            
             
         </Columns>
     </asp:GridView>

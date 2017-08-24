@@ -94,11 +94,6 @@
         <asp:Label ID="Label7" runat="server" Text="Organisationsnummer" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
 
-            
-
-           <%-- <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" 
-                ControlToValidate="orgnrtb" ErrorMessage="Använd formatet xxxxxx-xxxx" 
-                ValidationExpression="^[0-9]{6}-[0-9]{4}$" ForeColor="#FF3300"></asp:RegularExpressionValidator>--%>
             <asp:TextBox ID="orgnrtb" runat="server" class="form-control"
                 ClientIDMode="Static" onkeyup="tbchange()" CausesValidation="True"></asp:TextBox>
 

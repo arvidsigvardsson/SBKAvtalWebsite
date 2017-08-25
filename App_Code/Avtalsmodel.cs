@@ -23,8 +23,8 @@ public class Avtalsmodel
     public long? avtalstecknare { get; set; }
     public long? avtalskontakt { get; set; }
     public long? upphandlat_av { get; set; }
-    public string ansvarig_avdelning { get; set; }
-    public string ansvarig_enhet { get; set; }
+    public long? ansvarig_avdelning { get; set; }
+    public long? ansvarig_enhet { get; set; }
     public long? ansvarig_sbk { get; set; }
     public long? datakontakt { get; set; }
     public string konto { get; set; }

@@ -167,7 +167,17 @@
     <div class="form-group row">
         <asp:Label ID="Label14" runat="server" Text="Ansvarig avdelning" class="control-label col-sm-2 text-right"></asp:Label>
         <div class="col-sm-6">
-            <asp:TextBox ID="ansvavdtb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
+            <asp:DropDownList ID="ansvarig_avddd" runat="server" onchange="tbchange()">
+            </asp:DropDownList>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <asp:Label ID="Label15" runat="server" Text="Ansvarig enhet" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <%--<asp:TextBox ID="ansvenhtb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>--%>
+            <asp:DropDownList ID="ansvarig_enhetdd" runat="server" onchange="tbchange()">
+            </asp:DropDownList>
         </div>
     </div>
 
@@ -181,12 +191,7 @@
         </div>
 
 
-    <div class="form-group row">
-        <asp:Label ID="Label15" runat="server" Text="Ansvarig enhet" class="control-label col-sm-2 text-right"></asp:Label>
-        <div class="col-sm-6">
-            <asp:TextBox ID="ansvenhtb" runat="server" class="form-control" onkeyup="tbchange()"></asp:TextBox>
-        </div>
-    </div>
+    
     
     <div class="form-group row">
         <asp:Label ID="Label18" runat="server" Text="Sökväg till avtal" class="control-label col-sm-2 text-right"></asp:Label>
@@ -266,10 +271,26 @@
     </div>
     </div>
 
-    <asp:Button ID="submitbtn" runat="server" Text="Skicka" class="btn btn-primary" 
-        onclick="submitbtn_Click" ClientIDMode="Static" />
-       <%-- </div>--%>
+    <div class="form-group row">
+        <asp:Label ID="Label26" runat="server" Text="Lösenord" class="control-label col-sm-2 text-right"></asp:Label>
+        <div class="col-sm-6">
+            <asp:TextBox ID="passwordtb" runat="server" class="form-control" onkeyup="tbchange()" TextMode="Password"></asp:TextBox>
+            <asp:CustomValidator ID="passwordvalidator" runat="server" 
+                ErrorMessage="CustomValidator" ControlToValidate="passwordtb" 
+                ForeColor="Red" onservervalidate="passwordvalidator_ServerValidate" 
+                SetFocusOnError="True" ValidateEmptyText="True"></asp:CustomValidator>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="control-label col-sm-2 text-right">
+            <asp:Button ID="submitbtn" runat="server" Text="Skicka" class="btn btn-primary"
+            onclick="submitbtn_Click" ClientIDMode="Static" />
+        
+        </div>
+    </div>
+
+    
     </form>
-    <asp:Label ID="debugl" runat="server" Text="debug"></asp:Label>
-    <asp:Label ID="debugl2" runat="server" Text="debug"></asp:Label>
+   
 </asp:Content>

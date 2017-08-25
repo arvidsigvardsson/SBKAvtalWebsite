@@ -27,8 +27,10 @@ public partial class avtal_detail : System.Web.UI.Page
 
         var avtal = new Avtalsmodel();
         var persons = new List<Person>();
-        var innehallslist = new List<Innehall>();
+        var innehallslist = new List<DBDropdownContent>();
         var leveranslist = new List<DateTime>();
+        var avdelningslist = new List<DBDropdownContent>();
+        var enhetslist = new List<DBDropdownContent>();
 
         // ta fram personer till rullister
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
@@ -51,7 +53,41 @@ public partial class avtal_detail : System.Web.UI.Page
                 {
                     while (reader.Read())
                     {
-                        innehallslist.Add(new Innehall
+                        innehallslist.Add(new DBDropdownContent
+                        {
+                            id = reader.GetInt32(0),
+                            beskrivning = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+
+            // lista med avdelningar
+            var avdelningsquery = "select id, namn from sbk_avtal.ansvarig_avd";
+            using (var cmd = new NpgsqlCommand(avdelningsquery, conn))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        avdelningslist.Add(new DBDropdownContent
+                        {
+                            id = reader.GetInt32(0),
+                            beskrivning = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+
+            // lista med enheter
+            var enhetsquery = "select id, namn from sbk_avtal.ansvarig_enhet";
+            using (var cmd = new NpgsqlCommand(enhetsquery, conn))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        enhetslist.Add(new DBDropdownContent
                         {
                             id = reader.GetInt32(0),
                             beskrivning = reader.GetString(1)
@@ -64,6 +100,8 @@ public partial class avtal_detail : System.Web.UI.Page
         // sparar i sessionen
         Session.Add("persons", persons);
         Session.Add("innehallslist", innehallslist);
+        Session.Add("avdelningslist", avdelningslist);
+        Session.Add("enhetslist", enhetslist);
 
         for (int i = 0; i < persons.Count; i++)
         {
@@ -93,9 +131,31 @@ public partial class avtal_detail : System.Web.UI.Page
         // avtalsinnehåll
         for (int i = 0; i < innehallslist.Count; i++)
         {
-            Innehall inn = innehallslist[i];
+            DBDropdownContent inn = innehallslist[i];
             innehallcbl.Items.Add(new ListItem(inn.beskrivning));
             inn.ListIndex = i;
+        }
+
+        // lägger till i ansvarig_avd dropdown, först ett tomt val och sedan listan
+        ansvarig_avddd.Items.Add(new ListItem(""));
+        for (int i = 0; i < avdelningslist.Count; i++)
+        {
+            var avd = avdelningslist[i];
+            avd.ListIndex = i + 1;
+            ansvarig_avddd.Items.Add(new ListItem(avd.beskrivning));
+        }
+
+        // lägger till i ansvarig_enhet, först ett tomt val och sedan listan
+        ansvarig_enhetdd.Items.Add(new ListItem(""));
+        //foreach (var enhet in enhetslist)
+        //{
+        //    ansvarig_enhetdd.Items.Add(new ListItem(enhet.beskrivning));
+        //}
+        for (int i = 0; i < enhetslist.Count; i++)
+        {
+            var enhet = enhetslist[i];
+            enhet.ListIndex = i + 1;
+            ansvarig_enhetdd.Items.Add(new ListItem(enhet.beskrivning));
         }
 
         if (Request.Params["nytt_avtal".ToLower()] == "true")
@@ -103,11 +163,15 @@ public partial class avtal_detail : System.Web.UI.Page
             // debugl.Text = "nytt avtal";
             //submitbtn.Text = "Lägg till nytt avtal";
             SetSubmitButtonAppearance(SubmitButtonState.SparaNytt);
+
+            // väljer tomt innehåll i dropdowns
             avtalstecknaredd.Items.FindByText("").Selected = true;
             kontaktdd.Items.FindByText("").Selected = true;
             upphandlatdd.Items.FindByText("").Selected = true;
             ansvarig_sbkdd.Items.FindByText("").Selected = true;
             datakontaktdd.Items.FindByText("").Selected = true;
+            ansvarig_avddd.Items.FindByText("").Selected = true;
+            ansvarig_enhetdd.Items.FindByText("").Selected = true;
             return;
         }
         else
@@ -184,8 +248,18 @@ public partial class avtal_detail : System.Web.UI.Page
         enlavttb.Text = avtal.enligtAvtal;
         intidtb.Text = avtal.interntAlias;
         kommentartb.Text = avtal.kommentar;
-        ansvavdtb.Text = avtal.ansvarig_avdelning;
-        ansvenhtb.Text = avtal.ansvarig_enhet;
+
+        //ansvavdtb.Text = avtal.ansvarig_avdelning;
+        //ansvenhtb.Text = avtal.ansvarig_enhet;
+        if (avtal.ansvarig_avdelning != null)
+        {
+            ansvarig_avddd.Items.FindByValue(avdelningslist.Where(x => x.id == avtal.ansvarig_avdelning).First().beskrivning).Selected = true;
+        }
+
+        if (avtal.ansvarig_enhet != null)
+        {
+            ansvarig_enhetdd.Items.FindByValue(enhetslist.Where(x => x.id == avtal.ansvarig_enhet).First().beskrivning).Selected = true;
+        }
 
         pathtoavtaltb.Text = avtal.scan_url;
 
@@ -256,9 +330,6 @@ public partial class avtal_detail : System.Web.UI.Page
             datakontaktdd.Items.FindByValue("").Selected = true;
         }
 
-
-        debugl.Text = "";
-
         ShowHideControls();
 
     }
@@ -287,7 +358,7 @@ public partial class avtal_detail : System.Web.UI.Page
     }
 
 
-    private class Innehall
+    private class DBDropdownContent
     {
         public int id { get; set; }
         public string beskrivning { get; set; }
@@ -310,7 +381,7 @@ public partial class avtal_detail : System.Web.UI.Page
 
         // lägger till ett state att det är en rullist som ändrats, så att postback fungerar korrekt
         //Session["change in dropdown"] = true;
-        debugl.Text = "dropdown ändrad";
+        
     }
 
     protected void submitbtn_Click(object sender, EventArgs e)
@@ -335,8 +406,7 @@ public partial class avtal_detail : System.Web.UI.Page
 
     private void UpdateAvtal()
     {
-        debugl.Text = "Update metoden";
-
+       
         var avtal = GetFormInputs();
         var leveranser = GetLeveransDates();
         int id;
@@ -456,8 +526,7 @@ public partial class avtal_detail : System.Web.UI.Page
 
     private void SaveNewAvtal()
     {
-        debugl.Text = "SaveNew metoden";
-
+      
         Avtalsmodel avtal = GetFormInputs();
         int avtalId = -1;
 
@@ -543,7 +612,7 @@ public partial class avtal_detail : System.Web.UI.Page
 
     private List<int> GetCheckedInnehall()
     {
-        var lst = (List<Innehall>)Session["innehallslist"];
+        var lst = (List<DBDropdownContent>)Session["innehallslist"];
         return innehallcbl.Items.
             Cast<ListItem>().
             Where(x => x.Selected).
@@ -569,8 +638,8 @@ public partial class avtal_detail : System.Web.UI.Page
             enligtAvtal = enlavttb.Text,
             interntAlias = intidtb.Text,
             kommentar = kommentartb.Text,
-            ansvarig_avdelning = ansvavdtb.Text,
-            ansvarig_enhet = ansvenhtb.Text,
+            //ansvarig_avdelning = ansvavdtb.Text,
+            //ansvarig_enhet = ansvenhtb.Text,
             scan_url = pathtoavtaltb.Text,
             konto = kontotb.Text,
             kstl = kstltb.Text,
@@ -623,6 +692,27 @@ public partial class avtal_detail : System.Web.UI.Page
             avtal.datakontakt = null;
         }
 
+        var avdelningslist = (List<DBDropdownContent>) Session["avdelningslist"];
+        try
+        {
+            avtal.ansvarig_avdelning = avdelningslist.Where(x => ansvarig_avddd.SelectedIndex == x.ListIndex).FirstOrDefault().id;
+        }
+        catch (Exception)
+        {
+
+            avtal.ansvarig_avdelning = null;
+        }
+
+        var enhetslist = (List<DBDropdownContent>)Session["enhetslist"];
+        try
+        {
+            avtal.ansvarig_enhet = enhetslist.Where(x => ansvarig_enhetdd.SelectedIndex == x.ListIndex).FirstOrDefault().id;
+        }
+        catch (Exception)
+        {
+            avtal.ansvarig_enhet = null;
+        }
+
         return avtal;
     }
 
@@ -672,7 +762,6 @@ public partial class avtal_detail : System.Web.UI.Page
 
     protected void OrgNummerValidator_ServerValidate(object source, ServerValidateEventArgs args)
     {
-        debugl2.Text = "Validerar...";
         var regex = new Regex("^[0-9]{6}-[0-9]{4}$");
         var orgnr = args.Value;
 
@@ -712,5 +801,21 @@ public partial class avtal_detail : System.Web.UI.Page
     protected void avtalstyptb_SelectedIndexChanged(object sender, EventArgs e)
     {
         ShowHideControls();
+    }
+
+    protected void passwordvalidator_ServerValidate(object source, ServerValidateEventArgs args)
+    {
+        var correctpwd = ConfigurationManager.AppSettings["password"];
+        var typedpwd = passwordtb.Text;
+        if (correctpwd == typedpwd)
+        {
+            args.IsValid = true;
+        }
+        else
+        {
+            args.IsValid = false;
+            passwordvalidator.ErrorMessage = "Felaktigt lösenord";
+        }
+        
     }
 }

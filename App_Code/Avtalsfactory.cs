@@ -155,6 +155,26 @@ public static class Avtalsfactory
                 datakontakt = null;
             }
 
+            long? ansvarig_avd;
+            if (reader.GetValue(15) != DBNull.Value)
+            {
+                ansvarig_avd = reader.GetInt32(15);
+            }
+            else
+            {
+                ansvarig_avd = null;
+            }
+
+            long? ansvarig_enhet;
+            if (reader.GetValue(16) != DBNull.Value)
+            {
+                ansvarig_enhet = reader.GetInt32(16);
+            }
+            else
+            {
+                ansvarig_enhet = null;
+            }
+
             // TODO lägg till id för avtalstecknare, kontakt etc, så att rätt person väljs i rullisterna
             lst.Add(new Avtalsmodel
             {
@@ -174,8 +194,8 @@ public static class Avtalsfactory
                 avtalskontakt = avtalskontakt,
                 ansvarig_sbk = ansvarig_sbk,
                 upphandlat_av = upphandlat_av,
-                ansvarig_avdelning = reader.GetString(15),
-                ansvarig_enhet = reader.GetString(16),
+                ansvarig_avdelning = ansvarig_avd, //reader.GetInt32(15),
+                ansvarig_enhet = ansvarig_enhet, //reader.GetInt32(16),
                 datakontakt = datakontakt,
                 konto = reader.GetString(19),
                 kstl = reader.GetString(20),

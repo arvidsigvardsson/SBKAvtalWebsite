@@ -12,7 +12,7 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        <h3><a href="Default.aspx">SBK Avtalskatalog</a></h3>
+        <h3><a href="Default.aspx" style="padding: 20px">SBK Avtalskatalog</a></h3>
     </div>
 
     <div>

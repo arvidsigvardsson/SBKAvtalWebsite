@@ -27,6 +27,4 @@
             <a href="./avtalsgrid.aspx">Avtal som gridview</a>
         </li>--%>
     </ul>
-   <asp:Label ID="userlabel" runat="server" Text="Label"></asp:Label>
-   <asp:Label ID="auth" runat="server" Text="Label"></asp:Label>
 </asp:Content>

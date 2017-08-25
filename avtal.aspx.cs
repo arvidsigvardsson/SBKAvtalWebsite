@@ -78,8 +78,6 @@ public partial class avtalsgrid : System.Web.UI.Page
 
         AvtalTable.DataSource = dt;
 
-        //AvtalTable.DataKeys = "ID";
-
         AvtalTable.DataBind();
 
         // filtrerings-rullistor
@@ -98,7 +96,7 @@ public partial class avtalsgrid : System.Web.UI.Page
             medarbetaredd.Items.Add(string.Format("{0} {1}", person.FirstName, person.LastName));
         }
 
-        Session.Add("AvtalTableDataSource", dt);
+        //Session.Add("AvtalTableDataSource", dt);
         
 
         Session.Add("medarbetare", medarbetare);

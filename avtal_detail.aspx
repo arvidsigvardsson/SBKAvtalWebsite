@@ -285,7 +285,7 @@
     <div class="form-group row">
         <div class="control-label col-sm-2 text-right">
             <asp:Button ID="submitbtn" runat="server" Text="Skicka" class="btn btn-primary"
-            onclick="submitbtn_Click" ClientIDMode="Static" />
+            onclick="submitbtn_Click" ClientIDMode="Static" type="submit"/>
         
         </div>
     </div>

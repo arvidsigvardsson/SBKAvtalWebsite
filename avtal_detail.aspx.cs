@@ -334,30 +334,6 @@ public partial class avtal_detail : System.Web.UI.Page
 
     }
 
-    private void PostbackUpdateAvtal()
-    {
-        //var idx = avtalstecknaredd.SelectedIndex;
-        //var persons = (List<Person>)Session["persons"];
-        //var person = persons.Where(x => x.dropdownindex == idx).First();
-        // debugl.Text = person.LastName;
-        ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Uppdaterar')", true);
-    }
-
-    private void PostbackNewAvtal()
-    {
-        // debugl.Text = "sparar nytt avtal";
-        ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Sparar nytt')", true);
-    }
-
-
-    protected void Button1_Click(object sender, EventArgs e)
-    {
-        submitbtn.Text = "Sparat";
-        submitbtn.CssClass = "btn btn-success";
-        // debugl.Text = diarietb.Text;
-    }
-
-
     private class DBDropdownContent
     {
         public int id { get; set; }
@@ -482,20 +458,6 @@ public partial class avtal_detail : System.Web.UI.Page
                 cmd.ExecuteNonQuery();
             }
 
-
-            //using (var conn = new NpgsqlConnection(connstr))
-            //{
-            //    // rensa maptabellen med avtalsinnehåll för givet avtal
-            //    var deletequery = "delete from sbk_avtal.map_avtal_innehall where id=@id;";
-            //    using (var cmd = new NpgsqlCommand(deletequery, conn))
-            //    {
-            //        cmd.Parameters.AddWithValue("id", id);
-            //        cmd.ExecuteNonQuery();
-            //    }
-            //}
-
-            // lägg till nytt avtalsinnehåll
-            // lägger till i innehållmaptable
             foreach (var innehallId in GetCheckedInnehall())
             {
                 var innehallsquery = "insert into sbk_avtal.map_avtal_innehall(avtal_id, avtalsinnehall_id) values(@avtal_id, @avtalsinnehall_id);";
@@ -528,6 +490,7 @@ public partial class avtal_detail : System.Web.UI.Page
     {
       
         Avtalsmodel avtal = GetFormInputs();
+        var leveranser = GetLeveransDates();
         int avtalId = -1;
 
         string connstr = ConfigurationManager.ConnectionStrings["postgres connection"].ConnectionString;
@@ -596,6 +559,18 @@ public partial class avtal_detail : System.Web.UI.Page
                 }
             }
 
+            // lägg till leveranser
+            foreach (var date in leveranser)
+            {
+                var insertlevquery = "insert into sbk_avtal.leveranser(datum, avtal_id) values(@datum, @avtal_id);";
+                using (var cmd = new NpgsqlCommand(insertlevquery, conn))
+                {
+                    cmd.Parameters.AddWithValue("datum", date);
+                    cmd.Parameters.AddWithValue("avtal_id", avtalId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
         }
     }
 
@@ -638,8 +613,6 @@ public partial class avtal_detail : System.Web.UI.Page
             enligtAvtal = enlavttb.Text,
             interntAlias = intidtb.Text,
             kommentar = kommentartb.Text,
-            //ansvarig_avdelning = ansvavdtb.Text,
-            //ansvarig_enhet = ansvenhtb.Text,
             scan_url = pathtoavtaltb.Text,
             konto = kontotb.Text,
             kstl = kstltb.Text,
